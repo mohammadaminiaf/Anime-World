@@ -3,9 +3,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 class ScreenFullImagesView extends StatefulWidget {
   final List<String> imageUrls;
+  final int index;
 
   const ScreenFullImagesView({
     super.key,
+    this.index = 0,
     required this.imageUrls,
   });
 
@@ -16,19 +18,23 @@ class ScreenFullImagesView extends StatefulWidget {
 }
 
 class _ScreenFullImagesViewState extends State<ScreenFullImagesView> {
+  late final PageController _controller;
   int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController(initialPage: widget.index);
+    _currentPage = widget.index;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Stack(
       children: [
         PageView.builder(
+          controller: _controller,
           itemCount: widget.imageUrls.length,
-          onPageChanged: (index) {
-            setState(() {
-              _currentPage = index;
-            });
-          },
           itemBuilder: (context, index) {
             return MediaPage(imageUrl: widget.imageUrls[index]);
           },

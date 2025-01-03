@@ -2,7 +2,7 @@ import 'package:anime_world/common/screens/screen_full_images_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
-import '/common/widgets/network_image_view.dart';
+import '../../common/widgets/screen_image_view.dart';
 import '/core/screens/error_screen.dart';
 import '/models/anime_category.dart';
 import '../../screens/screen_anime_details.dart';
@@ -63,17 +63,19 @@ class AppRouter {
       GoRoute(
         path: ScreenFullImagesView.routeName,
         builder: (context, state) {
-          final imageUrls = state.extra as List<String>? ?? [];
-          return ScreenFullImagesView(imageUrls: imageUrls);
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final imageUrls = extra['images'];
+          final index = extra['index'];
+          return ScreenFullImagesView(imageUrls: imageUrls, index: index);
         },
       ),
 
       //! Screen to display a single full image
       GoRoute(
-        path: NetworkImageView.routeName,
+        path: ScreenImageView.routeName,
         builder: (context, state) {
           final String imageUrl = state.extra as String? ?? '';
-          return NetworkImageView(url: imageUrl);
+          return ScreenImageView(url: imageUrl);
         },
       ),
     ],
@@ -124,10 +126,10 @@ Route onGenerateRoute(RouteSettings settings) {
         ),
       );
 
-    case NetworkImageView.routeName:
+    case ScreenImageView.routeName:
       final imageUrl = settings.arguments as String;
       return _cupertinoRoute(
-        view: NetworkImageView(
+        view: ScreenImageView(
           url: imageUrl,
         ),
       );

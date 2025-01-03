@@ -9,7 +9,7 @@ import '/common/screens/screen_full_images_view.dart';
 import '/common/styles/paddings.dart';
 import '/common/styles/text_styles.dart';
 import '/common/widgets/ios_back_button.dart';
-import '/common/widgets/network_image_view.dart';
+import '../common/widgets/screen_image_view.dart';
 import '/common/widgets/read_more_text.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
@@ -120,7 +120,7 @@ class ScreenAnimeDetails extends ConsumerWidget {
         children: [
           InkWell(
             onTap: () {
-              context.push(NetworkImageView.routeName, extra: imageUrl);
+              context.push(ScreenImageView.routeName, extra: imageUrl);
             },
             child: CachedNetworkImage(
               imageUrl: imageUrl,
@@ -230,11 +230,14 @@ class ScreenAnimeDetails extends ConsumerWidget {
                   onTap: () {
                     context.push(
                       ScreenFullImagesView.routeName,
-                      extra: pictures.map((e) => e.medium).toList(),
+                      extra: {
+                        'images': pictures.map((e) => e.large).toList(),
+                        'index': index,
+                      },
                     );
                   },
-                  child: Image.network(
-                    image,
+                  child: CachedNetworkImage(
+                    imageUrl: image,
                     fit: BoxFit.cover,
                   ),
                 ),
