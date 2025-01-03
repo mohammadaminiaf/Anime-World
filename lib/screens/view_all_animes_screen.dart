@@ -24,28 +24,30 @@ class ViewAllAnimesScreen extends StatefulWidget {
 class _ViewAllAnimesScreenState extends State<ViewAllAnimesScreen> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getAnimeByRankingTypeApi(
-        rankingType: widget.rankingType,
-        limit: 500,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Loader();
-        }
+    return Scaffold(
+      body: FutureBuilder(
+        future: getAnimeByRankingTypeApi(
+          rankingType: widget.rankingType,
+          limit: 500,
+        ),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Loader();
+          }
 
-        if (snapshot.data != null) {
-          final animes = snapshot.data!;
+          if (snapshot.data != null) {
+            final animes = snapshot.data!;
 
-          return RankedAnimesListView(
-            animes: animes,
+            return RankedAnimesListView(
+              animes: animes,
+            );
+          }
+
+          return ErrorScreen(
+            error: snapshot.error.toString(),
           );
-        }
-
-        return ErrorScreen(
-          error: snapshot.error.toString(),
-        );
-      },
+        },
+      ),
     );
   }
 }

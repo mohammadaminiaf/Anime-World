@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:go_router/go_router.dart';
 
 import '/common/widgets/network_image_view.dart';
 import '/core/screens/error_screen.dart';
@@ -8,6 +9,57 @@ import '/screens/category_animes_screen.dart';
 import '/screens/home_screen.dart';
 import '/screens/view_all_animes_screen.dart';
 import '/screens/view_all_seasonal_animes_screen.dart';
+
+class AppRouter {
+  static final GoRouter router = GoRouter(
+    routes: [
+      //! Initial Route
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const HomeScreen(),
+      ),
+
+      //! Anime details route
+      GoRoute(
+        path: AnimeDetailsScreen.routeName,
+        builder: (context, state) {
+          final int id = state.extra as int? ?? 0;
+          return AnimeDetailsScreen(id: id);
+        },
+      ),
+
+      //! View animes list view
+      GoRoute(
+        path: ViewAllAnimesScreen.routeName,
+        builder: (context, state) {
+          final Map<String, dynamic> arguments =
+              state.extra as Map<String, dynamic>;
+          final String rankingType = arguments['rankingType'] as String;
+          final String label = arguments['label'] as String;
+
+          return ViewAllAnimesScreen(
+            rankingType: rankingType,
+            label: label,
+          );
+        },
+      ),
+
+      //! View all seasonal animes
+      GoRoute(
+        path: ViewAllSeasonalAnimesScreen.routeName,
+        builder: (context, state) {
+          final Map<String, dynamic> arguments =
+              state.extra as Map<String, dynamic>;
+          final String label = arguments['label'] as String;
+
+          return ViewAllSeasonalAnimesScreen(
+            label: label,
+          );
+        },
+      ),
+    ],
+  );
+}
 
 Route onGenerateRoute(RouteSettings settings) {
   switch (settings.name) {

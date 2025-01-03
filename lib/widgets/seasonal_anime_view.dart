@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '/core/components/view_all_header.dart';
 import '/core/screens/error_screen.dart';
@@ -25,9 +26,9 @@ class SeasonalAnimeView extends ConsumerWidget {
     final categoryTitle = ViewAllHeader(
       title: label,
       onViewAllClicked: () {
-        Navigator.of(context).pushNamed(
+        context.push(
           ViewAllSeasonalAnimesScreen.routeName,
-          arguments: {'label': label},
+          extra: {'label': label},
         );
       },
     );
@@ -78,10 +79,7 @@ class AnimeListView extends StatelessWidget {
           final anime = animes.elementAt(index);
           return InkWell(
             onTap: () {
-              Navigator.of(context).pushNamed(
-                AnimeDetailsScreen.routeName,
-                arguments: anime.node.id,
-              );
+              context.push(AnimeDetailsScreen.routeName, extra: anime.node.id);
             },
             child: AnimeTile(anime: anime.node),
           );

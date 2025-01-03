@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 import '/common/styles/text_styles.dart';
 import '/models/anime_node.dart';
@@ -38,10 +39,8 @@ class AnimeHorizontalListView extends StatelessWidget {
                     final anime = animes[index];
                     return GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushNamed(
-                          AnimeDetailsScreen.routeName,
-                          arguments: anime.id,
-                        );
+                        context.push(AnimeDetailsScreen.routeName,
+                            extra: anime.id);
                       },
                       child: AnimeTile(anime: anime),
                     );

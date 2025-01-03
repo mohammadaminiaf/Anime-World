@@ -6,7 +6,6 @@ import '/config/routes/routes.dart';
 import '/config/theme/app_theme.dart';
 import '/cubits/anime_title_language_cubit.dart';
 import '/cubits/theme_cubit.dart';
-import '/screens/home_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,14 +35,13 @@ class MyApp extends StatelessWidget {
       builder: (context, state) {
         final themeMode = state;
         return ProviderScope(
-          child: MaterialApp(
+          child: MaterialApp.router(
             debugShowCheckedModeBanner: false,
             title: 'Flutter Demo',
             themeMode: themeMode,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
-            home: const HomeScreen(),
-            onGenerateRoute: onGenerateRoute,
+            routerConfig: AppRouter.router,
           ),
         );
       },

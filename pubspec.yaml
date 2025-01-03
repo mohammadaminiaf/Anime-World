@@ -20,7 +20,7 @@ dependencies:
   shimmer: ^3.0.0
   smooth_page_indicator: ^1.1.0
   carousel_slider_plus: ^7.1.0
-  
+  go_router: ^14.6.2
 
 dev_dependencies:
   flutter_test:

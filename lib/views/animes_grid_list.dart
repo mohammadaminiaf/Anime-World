@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:go_router/go_router.dart';
 
 import '/models/anime.dart';
 import '/screens/anime_details_screen.dart';
@@ -45,10 +46,7 @@ class AnimeGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        Navigator.of(context).pushNamed(
-          AnimeDetailsScreen.routeName,
-          arguments: anime.node.id,
-        );
+        context.push(AnimeDetailsScreen.routeName, extra: anime.node.id);
       },
       child: Material(
         elevation: 5,

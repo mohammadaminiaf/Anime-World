@@ -25,7 +25,7 @@ class _TopAnimesImageSliderState extends State<TopAnimesImageSlider> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 200,
+      height: 500,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
