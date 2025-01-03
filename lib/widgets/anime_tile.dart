@@ -1,4 +1,4 @@
-import 'package:anime_world/screens/anime_details_screen.dart';
+import 'package:anime_world/screens/screen_anime_details.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -18,7 +18,7 @@ class AnimeTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.push(AnimeDetailsScreen.routeName, extra: anime.id);
+        context.push(ScreenAnimeDetails.routeName, extra: anime.id);
       },
       child: SizedBox(
         width: 150,

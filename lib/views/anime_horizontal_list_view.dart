@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '/common/styles/text_styles.dart';
 import '/models/anime_node.dart';
-import '/screens/anime_details_screen.dart';
+import '../screens/screen_anime_details.dart';
 import '/widgets/anime_tile.dart';
 
 class AnimeHorizontalListView extends StatelessWidget {
@@ -39,7 +39,7 @@ class AnimeHorizontalListView extends StatelessWidget {
                     final anime = animes[index];
                     return GestureDetector(
                       onTap: () {
-                        context.push(AnimeDetailsScreen.routeName,
+                        context.push(ScreenAnimeDetails.routeName,
                             extra: anime.id);
                       },
                       child: AnimeTile(anime: anime),

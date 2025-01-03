@@ -2,10 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/api/get_anime_by_ranking_type_api.dart';
 import '/api/get_anime_by_search_api.dart';
-import '/api/get_anime_details_api.dart';
 import '/api/get_seasonal_animes_api.dart';
+import '/locator.dart';
 import '/models/anime.dart';
 import '/models/anime_details.dart';
+import '/repositories/animes_repository.dart';
 
 //! Seasonal Anime
 final getSeasonalAnimesProvider = FutureProvider((ref) {
@@ -30,9 +31,8 @@ final getAnimeBySearchProvider =
 );
 
 //! Anime Details
-final getAnimeDetailsProvider =
-    FutureProvider.autoDispose.family<AnimeDetails, int>(
-  (ref, id) {
-    return getAnimeDetailsApi(id: id);
-  },
-);
+final animeDetailsProvider =
+    FutureProvider.autoDispose.family<AnimeDetails, int?>((ref, id) {
+  final animesRepo = getIt.get<AnimesRepository>();
+  return animesRepo.fetchAnimeById(id ?? 0);
+});

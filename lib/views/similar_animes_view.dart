@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '/models/anime_node.dart';
-import '/screens/anime_details_screen.dart';
+import '../screens/screen_anime_details.dart';
 import '/widgets/anime_tile.dart';
 
 class SimilarAnimesView extends StatelessWidget {
@@ -47,7 +47,7 @@ class SimilarAnimesView extends StatelessWidget {
                 onTap: () {
                   Navigator.of(context).push(
                     MaterialPageRoute(
-                      builder: (_) => AnimeDetailsScreen(
+                      builder: (_) => ScreenAnimeDetails(
                         id: anime.id,
                       ),
                     ),

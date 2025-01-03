@@ -4,7 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:go_router/go_router.dart';
 
 import '/models/anime.dart';
-import '/screens/anime_details_screen.dart';
+import '../screens/screen_anime_details.dart';
 
 class AnimesGridList extends StatelessWidget {
   const AnimesGridList({
@@ -46,7 +46,7 @@ class AnimeGridTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.push(AnimeDetailsScreen.routeName, extra: anime.node.id);
+        context.push(ScreenAnimeDetails.routeName, extra: anime.node.id);
       },
       child: Material(
         elevation: 5,

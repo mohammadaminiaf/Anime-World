@@ -6,7 +6,7 @@ import '/core/components/view_all_header.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
 import '/models/anime.dart';
-import '/screens/anime_details_screen.dart';
+import '../screens/screen_anime_details.dart';
 import '/screens/view_all_seasonal_animes_screen.dart';
 import '/widgets/anime_tile.dart';
 import '../providers/anime_providers.dart';
@@ -79,7 +79,7 @@ class AnimeListView extends StatelessWidget {
           final anime = animes.elementAt(index);
           return InkWell(
             onTap: () {
-              context.push(AnimeDetailsScreen.routeName, extra: anime.node.id);
+              context.push(ScreenAnimeDetails.routeName, extra: anime.node.id);
             },
             child: AnimeTile(anime: anime.node),
           );

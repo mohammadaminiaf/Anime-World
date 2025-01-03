@@ -6,10 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/models/anime.dart';
 import '/repositories/animes_repository.dart';
 
-class AnimesList extends AutoDisposeAsyncNotifier<Iterable<Anime>> {
+class AnimesNotifier extends AutoDisposeAsyncNotifier<Iterable<Anime>> {
   final AnimesRepository animesRepo;
 
-  AnimesList({required this.animesRepo});
+  AnimesNotifier({required this.animesRepo});
 
   @override
   FutureOr<List<Anime>> build() {
@@ -22,6 +22,8 @@ class AnimesList extends AutoDisposeAsyncNotifier<Iterable<Anime>> {
     required int limit,
   }) async {
     try {
+      state = const AsyncLoading();
+
       final allAnimes = await animesRepo.fetchAnimesByRanking(
         rankingType: rankingType,
         limit: limit,
@@ -39,6 +41,6 @@ class AnimesList extends AutoDisposeAsyncNotifier<Iterable<Anime>> {
 }
 
 final animesProvider =
-    AsyncNotifierProvider.autoDispose<AnimesList, Iterable<Anime>>(
-  () => AnimesList(animesRepo: getIt.get<AnimesRepository>()),
+    AsyncNotifierProvider.autoDispose<AnimesNotifier, Iterable<Anime>>(
+  () => AnimesNotifier(animesRepo: getIt.get<AnimesRepository>()),
 );

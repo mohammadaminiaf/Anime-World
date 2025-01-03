@@ -1,10 +1,11 @@
+import 'package:anime_world/common/screens/screen_full_images_view.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
 import '/common/widgets/network_image_view.dart';
 import '/core/screens/error_screen.dart';
 import '/models/anime_category.dart';
-import '/screens/anime_details_screen.dart';
+import '../../screens/screen_anime_details.dart';
 import '/screens/category_animes_screen.dart';
 import '/screens/home_screen.dart';
 import '/screens/view_all_animes_screen.dart';
@@ -21,10 +22,10 @@ class AppRouter {
 
       //! Anime details route
       GoRoute(
-        path: AnimeDetailsScreen.routeName,
+        path: ScreenAnimeDetails.routeName,
         builder: (context, state) {
           final int id = state.extra as int? ?? 0;
-          return AnimeDetailsScreen(id: id);
+          return ScreenAnimeDetails(id: id);
         },
       ),
 
@@ -57,16 +58,34 @@ class AppRouter {
           );
         },
       ),
+
+      //! Screen that displays all images
+      GoRoute(
+        path: ScreenFullImagesView.routeName,
+        builder: (context, state) {
+          final imageUrls = state.extra as List<String>? ?? [];
+          return ScreenFullImagesView(imageUrls: imageUrls);
+        },
+      ),
+
+      //! Screen to display a single full image
+      GoRoute(
+        path: NetworkImageView.routeName,
+        builder: (context, state) {
+          final String imageUrl = state.extra as String? ?? '';
+          return NetworkImageView(url: imageUrl);
+        },
+      ),
     ],
   );
 }
 
 Route onGenerateRoute(RouteSettings settings) {
   switch (settings.name) {
-    case AnimeDetailsScreen.routeName:
+    case ScreenAnimeDetails.routeName:
       final id = settings.arguments as int;
       return _cupertinoRoute(
-        view: AnimeDetailsScreen(id: id),
+        view: ScreenAnimeDetails(id: id),
       );
 
     case ViewAllAnimesScreen.routeName:

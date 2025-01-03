@@ -1,8 +1,11 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import '/api/get_anime_details_api.dart';
 import '/common/extensions/extensions.dart';
+import '/common/screens/screen_full_images_view.dart';
 import '/common/styles/paddings.dart';
 import '/common/styles/text_styles.dart';
 import '/common/widgets/ios_back_button.dart';
@@ -13,118 +16,118 @@ import '/core/widgets/loader.dart';
 import '/cubits/anime_title_language_cubit.dart';
 import '/models/anime_details.dart';
 import '/models/picture.dart';
-import '../views/anime_horizontal_list_view.dart';
+import '/providers/anime_providers.dart';
+import '/views/anime_horizontal_list_view.dart';
 
-class AnimeDetailsScreen extends StatelessWidget {
-  const AnimeDetailsScreen({
+class ScreenAnimeDetails extends ConsumerWidget {
+  static const routeName = '/screen-anime-details';
+
+  const ScreenAnimeDetails({
     super.key,
     required this.id,
   });
 
   final int id;
 
-  static const routeName = '/anime-details';
-
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getAnimeDetailsApi(id: id),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Loader();
-        }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final animeProvider = ref.watch(animeDetailsProvider(id));
 
-        if (snapshot.data != null) {
-          final anime = snapshot.data;
-          return Scaffold(
-            body: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildAnimeImage(
-                    imageUrl: anime!.mainPicture.large,
+    return Scaffold(
+      body: animeProvider.when(
+        data: (anime) {
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildAnimeImage(
+                  imageUrl: anime.mainPicture.large,
+                  context: context,
+                ),
+                Padding(
+                  padding: Paddings.defaultPadding,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      _buildAnimeName(
+                        defaultName: anime.title,
+                        englishName: anime.alternativeTitles.en,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Description
+                      ReadMoreText(
+                        longText: anime.synopsis,
+                      ),
+
+                      const SizedBox(height: 10),
+
+                      _buildAnimeInfo(
+                        anime: anime,
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      anime.background.isNotEmpty
+                          ? _buildAnimeBackground(
+                              background: anime.background,
+                            )
+                          : const SizedBox.shrink(),
+
+                      const SizedBox(height: 20),
+
+                      _buildAnimeImages(pictures: anime.pictures),
+
+                      const SizedBox(height: 20),
+
+                      // Related Animes
+                      AnimeHorizontalListView(
+                        title: 'Related Animes',
+                        animes: anime.relatedAnime
+                            .map((relatedAnime) => relatedAnime.node)
+                            .toList(),
+                      ),
+
+                      const SizedBox(height: 20),
+
+                      // Recommendations
+                      AnimeHorizontalListView(
+                        title: 'Recommendations',
+                        animes: anime.recommendations
+                            .map((recommendation) => recommendation.node)
+                            .toList(),
+                      ),
+                    ],
                   ),
-                  Padding(
-                    padding: Paddings.defaultPadding,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // Title
-                        _buildAnimeName(
-                          defaultName: anime.title,
-                          englishName: anime.alternativeTitles.en,
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Description
-                        ReadMoreText(
-                          longText: anime.synopsis,
-                        ),
-
-                        const SizedBox(height: 10),
-
-                        _buildAnimeInfo(
-                          anime: anime,
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        anime.background.isNotEmpty
-                            ? _buildAnimeBackground(
-                                background: anime.background,
-                              )
-                            : const SizedBox.shrink(),
-
-                        const SizedBox(height: 20),
-
-                        _buildAnimeImages(pictures: anime.pictures),
-
-                        const SizedBox(height: 20),
-
-                        // Related Animes
-                        AnimeHorizontalListView(
-                          title: 'Related Animes',
-                          animes: anime.relatedAnime
-                              .map((relatedAnime) => relatedAnime.node)
-                              .toList(),
-                        ),
-
-                        const SizedBox(height: 20),
-
-                        // Recommendations
-                        AnimeHorizontalListView(
-                          title: 'Recommendations',
-                          animes: anime.recommendations
-                              .map((recommendation) => recommendation.node)
-                              .toList(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           );
-        }
-
-        return ErrorScreen(
-          error: snapshot.error.toString(),
-        );
-      },
+        },
+        error: (error, stackTrace) => ErrorScreen(error: error.toString()),
+        loading: () => const Loader(),
+      ),
     );
   }
 
   Widget _buildAnimeImage({
     required String imageUrl,
+    required BuildContext context,
   }) =>
       Stack(
         children: [
-          Image.network(
-            imageUrl,
-            fit: BoxFit.cover,
-            height: 400,
-            width: double.infinity,
+          InkWell(
+            onTap: () {
+              context.push(NetworkImageView.routeName, extra: imageUrl);
+            },
+            child: CachedNetworkImage(
+              imageUrl: imageUrl,
+              fit: BoxFit.cover,
+              height: 400,
+              width: double.infinity,
+            ),
           ),
           Positioned(
             top: 30,
@@ -220,15 +223,14 @@ class AnimeDetailsScreen extends StatelessWidget {
           ),
           itemBuilder: (context, index) {
             final image = pictures[index].medium;
-            final largeImage = pictures[index].large;
             return SizedBox(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: InkWell(
                   onTap: () {
-                    Navigator.of(context).pushNamed(
-                      NetworkImageView.routeName,
-                      arguments: largeImage,
+                    context.push(
+                      ScreenFullImagesView.routeName,
+                      extra: pictures.map((e) => e.medium).toList(),
                     );
                   },
                   child: Image.network(

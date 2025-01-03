@@ -4,7 +4,7 @@ import 'package:carousel_slider_plus/carousel_slider_plus.dart';
 
 import '/constants/app_colors.dart';
 import '/models/anime.dart';
-import '/screens/anime_details_screen.dart';
+import '../screens/screen_anime_details.dart';
 
 class TopAnimesImageSlider extends StatefulWidget {
   const TopAnimesImageSlider({
@@ -94,7 +94,7 @@ class TopAnimePicture extends StatelessWidget {
       onTap: () {
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (_) => AnimeDetailsScreen(
+            builder: (_) => ScreenAnimeDetails(
               id: anime.node.id,
             ),
           ),
