@@ -1,4 +1,6 @@
 import 'package:anime_world/common/screens/screen_full_images_view.dart';
+import 'package:anime_world/screens/auth/screen_login.dart';
+import 'package:anime_world/screens/auth/screen_register.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -7,7 +9,7 @@ import '/core/screens/error_screen.dart';
 import '/models/anime_category.dart';
 import '../../screens/screen_anime_details.dart';
 import '/screens/category_animes_screen.dart';
-import '/screens/home_screen.dart';
+import '../../screens/screen_home.dart';
 import '/screens/view_all_animes_screen.dart';
 import '/screens/view_all_seasonal_animes_screen.dart';
 
@@ -17,7 +19,19 @@ class AppRouter {
       //! Initial Route
       GoRoute(
         path: '/',
-        builder: (context, state) => const HomeScreen(),
+        builder: (context, state) => const ScreenHome(),
+      ),
+
+      //! Login Screen
+      GoRoute(
+        path: ScreenLogin.routeName,
+        builder: (context, state) => const ScreenLogin(),
+      ),
+
+      //! Register Screen
+      GoRoute(
+        path: ScreenRegister.routeName,
+        builder: (context, state) => const ScreenLogin(),
       ),
 
       //! Anime details route
@@ -118,10 +132,10 @@ Route onGenerateRoute(RouteSettings settings) {
         ),
       );
 
-    case HomeScreen.routeName:
+    case ScreenHome.routeName:
       final index = settings.arguments as int?;
       return _cupertinoRoute(
-        view: HomeScreen(
+        view: ScreenHome(
           index: index,
         ),
       );

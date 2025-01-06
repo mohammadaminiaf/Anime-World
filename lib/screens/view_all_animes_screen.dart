@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
-import '../providers/animes_notifier.dart';
+import '../notifiers/animes_notifier.dart';
 import '/views/ranked_animes_list_view.dart';
 
 class ViewAllAnimesScreen extends ConsumerStatefulWidget {

@@ -1,10 +1,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 import '/common/utils/utils.dart';
-import '/config/app_config.dart';
 import '/models/anime.dart';
 import '/models/anime_info.dart';
 
@@ -15,6 +15,7 @@ Future<Iterable<Anime>> getSeasonalAnimesApi({
   final season = getCurrentSeason();
   final baseUrl =
       "https://api.myanimelist.net/v2/anime/season/$year/$season?limit=$limit";
+  final clientId = dotenv.env['CLIENT_ID'] ?? '';
 
   // Make a GET request
   final response = await http.get(

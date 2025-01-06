@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
-import '/config/app_config.dart';
 import '/models/anime_info.dart';
 
 Future<String> getCategoryPictureApi({
@@ -11,6 +11,7 @@ Future<String> getCategoryPictureApi({
 }) async {
   final baseUrl =
       'https://api.myanimelist.net/v2/anime/ranking?ranking_type=$category&limit=1';
+  final clientId = dotenv.env['CLIENT_ID'] ?? '';
 
   final response = await http.get(
     Uri.parse(baseUrl),

@@ -1,3 +1,25 @@
+import 'package:flutter/material.dart';
+
+class Utils {
+  Utils._();
+  static final Utils _instance = Utils._();
+
+  factory Utils() {
+    return _instance;
+  }
+
+  static void showSnackBar({
+    required String text,
+    required BuildContext context,
+  }) {
+    final snackBar = SnackBar(content: Text(text));
+
+    ScaffoldMessenger.of(context)
+      ..removeCurrentSnackBar
+      ..showSnackBar(snackBar);
+  }
+}
+
 /// Calculate current Season of the year
 /// Based on today's date and time
 String getCurrentSeason() {

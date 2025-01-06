@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '/common/extensions/extensions.dart';
 import '/common/styles/paddings.dart';
 import '/common/utils/utils.dart';
-import '/screens/home_screen.dart';
+import 'screen_home.dart';
 import '/views/featured_animes.dart';
 import '/widgets/seasonal_anime_view.dart';
 import '/widgets/top_animes_list.dart';
@@ -31,7 +31,7 @@ class _AnimesScreenState extends State<AnimesScreen> {
           IconButton(
             onPressed: () {
               Navigator.of(context).pushReplacementNamed(
-                HomeScreen.routeName,
+                ScreenHome.routeName,
                 arguments: 1,
               );
             },

@@ -1,4 +1,5 @@
 import 'package:anime_world/locator.dart';
+import 'package:anime_world/notifiers/auth_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -40,13 +41,18 @@ class MyApp extends StatelessWidget {
       builder: (context, state) {
         final themeMode = state;
         return ProviderScope(
-          child: MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            title: 'Flutter Demo',
-            themeMode: themeMode,
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            routerConfig: AppRouter.router,
+          child: Consumer(
+            builder: (context, ref, child) {
+              final user = ref.read(authProvider);
+              return MaterialApp.router(
+                debugShowCheckedModeBanner: false,
+                title: 'Flutter Demo',
+                themeMode: themeMode,
+                theme: AppTheme.lightTheme,
+                darkTheme: AppTheme.darkTheme,
+                routerConfig: AppRouter.router,
+              );
+            },
           ),
         );
       },
