@@ -31,7 +31,7 @@ class AppRouter {
       //! Register Screen
       GoRoute(
         path: ScreenRegister.routeName,
-        builder: (context, state) => const ScreenLogin(),
+        builder: (context, state) => const ScreenRegister(),
       ),
 
       //! Anime details route

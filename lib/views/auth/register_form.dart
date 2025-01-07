@@ -1,26 +1,29 @@
-import 'package:anime_world/common/buttons/round_button.dart';
-import 'package:anime_world/common/text_fields/password_text_field.dart';
-import 'package:anime_world/common/text_fields/round_text_field.dart';
-import 'package:anime_world/common/utils/utils.dart';
-import 'package:anime_world/common/utils/validators.dart';
-import 'package:anime_world/screens/auth/screen_login.dart';
+import 'package:anime_world/notifiers/auth_notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '/common/buttons/round_button.dart';
+import '/common/text_fields/password_text_field.dart';
+import '/common/text_fields/round_text_field.dart';
+import '/common/utils/utils.dart';
+import '/common/utils/validators.dart';
+import '/screens/auth/screen_login.dart';
 
 final _formKey = GlobalKey<FormState>();
 
-class RegisterForm extends StatefulWidget {
+class RegisterForm extends ConsumerStatefulWidget {
   const RegisterForm({super.key});
 
   @override
-  State<RegisterForm> createState() => _RegisterFormState();
+  ConsumerState<RegisterForm> createState() => _RegisterFormState();
 }
 
-class _RegisterFormState extends State<RegisterForm> {
+class _RegisterFormState extends ConsumerState<RegisterForm> {
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _firstNameController = TextEditingController();
-  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _repeatPasswordController =
       TextEditingController();
@@ -30,29 +33,31 @@ class _RegisterFormState extends State<RegisterForm> {
       _formKey.currentState?.save();
 
       final email = _emailController.text.trim();
-      final firstName = _firstNameController.text.trim();
-      final lastName = _lastNameController.text.trim();
+      final name = _nameController.text.trim();
+      final username = _usernameController.text.trim();
+      final phone = _phoneController.text.trim();
       final password = _passwordController.text.trim();
       final repeatPassword = _repeatPasswordController.text.trim();
 
       if (password != repeatPassword) {
         Utils.showSnackBar(
-          text: 'رمزهای عبور مطابقت ندارند.',
+          text: 'Passwords do not match.',
           context: context,
         );
         return;
       }
 
       if (email.isNotEmpty &&
-          firstName.isNotEmpty &&
-          lastName.isNotEmpty &&
+          name.isNotEmpty &&
+          username.isNotEmpty &&
           password.isNotEmpty) {
-        // context.read<AuthBloc>().add(AuthEventRegister(
-        //       email: email,
-        //       firstName: firstName,
-        //       lastName: lastName,
-        //       password: password,
-        //     ));
+        ref.read(authProvider.notifier).register(
+              name: name,
+              username: username,
+              email: email,
+              phone: phone,
+              password: password,
+            );
       }
     }
   }
@@ -60,8 +65,9 @@ class _RegisterFormState extends State<RegisterForm> {
   @override
   void dispose() {
     _emailController.dispose();
-    _firstNameController.dispose();
-    _lastNameController.dispose();
+    _nameController.dispose();
+    _usernameController.dispose();
+    _phoneController.dispose();
     _passwordController.dispose();
     _repeatPasswordController.dispose();
     super.dispose();
@@ -78,41 +84,73 @@ class _RegisterFormState extends State<RegisterForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           RoundTextField(
-            controller: _firstNameController,
-            hintText: 'نام',
+            controller: _nameController,
+            hintText: 'Full Name',
             validator: Validators.validateName,
           ),
           spaceS,
           RoundTextField(
-            controller: _lastNameController,
-            hintText: 'نام خانوادگی',
+            controller: _usernameController,
+            hintText: 'Username',
             validator: Validators.validateName,
           ),
           spaceS,
           RoundTextField(
             controller: _emailController,
-            hintText: 'ایمیل',
+            hintText: 'Email',
             keyboardType: TextInputType.emailAddress,
             validator: Validators.validateEmail,
           ),
           spaceS,
+          RoundTextField(
+            controller: _phoneController,
+            hintText: 'Phone',
+            keyboardType: TextInputType.emailAddress,
+            validator: Validators.validatePhone,
+          ),
+          spaceS,
           PasswordTextField(
             controller: _passwordController,
-            hintText: 'رمز عبور',
+            hintText: 'Password',
             validator: Validators.validatePassword,
           ),
           spaceS,
           PasswordTextField(
             controller: _repeatPasswordController,
-            hintText: 'تکرار رمز عبور',
+            hintText: 'Confirm Password',
             validator: Validators.validatePassword,
           ),
           spaceM,
-          RoundButton(
-            onPressed: _register,
-            label: 'ثبت نام',
-            isLoading: false,
-          ),
+          Consumer(builder: (context, ref, child) {
+            final auth = ref.watch(authProvider);
+            ref.listen(
+              authProvider,
+              (previous, next) {
+                if (next is AsyncData && next.value != null) {
+                  // User successfully logged in
+                  Utils.showSnackBar(
+                    context: context,
+                    text: 'Account Created successfully!',
+                  );
+
+                  // Navigate to home screen
+                  context.go(ScreenLogin.routeName);
+                } else if (next is AsyncError) {
+                  // Login failed
+                  Utils.showSnackBar(
+                    context: context,
+                    text: 'Failed to register: ${next.error}',
+                  );
+                }
+              },
+            );
+
+            return RoundButton(
+              onPressed: _register,
+              label: 'Register',
+              isLoading: auth.isLoading,
+            );
+          }),
           spaceM,
           _buildHaveAccount(),
         ],
@@ -123,10 +161,10 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget _buildHaveAccount() => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('قبلاً حساب کاربری دارید؟'),
+          const Text('Already have an account?'),
           TextButton(
             onPressed: () => context.push(ScreenLogin.routeName),
-            child: const Text('ورود'),
+            child: const Text('Login'),
           ),
         ],
       );

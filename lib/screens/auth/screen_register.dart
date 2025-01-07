@@ -1,6 +1,7 @@
-import 'package:anime_world/common/mixins/loading_overlay.dart';
-import 'package:anime_world/views/auth/register_form.dart';
 import 'package:flutter/material.dart';
+
+import '/common/mixins/loading_overlay.dart';
+import '/views/auth/register_form.dart';
 
 class ScreenRegister extends StatefulWidget {
   const ScreenRegister({super.key});

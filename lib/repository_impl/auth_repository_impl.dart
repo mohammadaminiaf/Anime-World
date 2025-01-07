@@ -50,13 +50,15 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
   }) async {
     try {
-      final response = await _dio.post('register', {
+      final form = {
         'name': name,
         'username': username,
         'email': email,
         'phone': phone,
         'password': password
-      });
+      };
+
+      final response = await _dio.post('auth/register', form);
 
       if (response.statusCode == 200) {
         final data = response.data['data'];

@@ -13,7 +13,7 @@ class ScreenHome extends StatefulWidget {
 
   final int? index;
 
-  static const routeName = '/home';
+  static const routeName = '/';
 
   @override
   State<ScreenHome> createState() => _ScreenHomeState();

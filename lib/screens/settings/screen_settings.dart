@@ -1,18 +1,16 @@
-import 'package:anime_world/common/mixins/dialog_mixin.dart';
-import 'package:anime_world/common/widgets/profile_tile.dart';
-import 'package:anime_world/core/screens/error_screen.dart';
-import 'package:anime_world/core/widgets/loader.dart';
-import 'package:anime_world/models/auth/user.dart';
-import 'package:anime_world/notifiers/auth_notifier.dart';
+import 'package:anime_world/screens/auth/screen_register.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '/common/mixins/dialog_mixin.dart';
 import '/common/styles/paddings.dart';
-import '/constants/app_config.dart';
+import '/common/widgets/profile_tile.dart';
 import '/cubits/anime_title_language_cubit.dart';
 import '/cubits/theme_cubit.dart';
+import '/models/auth/user.dart';
+import '/notifiers/auth_notifier.dart';
 import '/screens/auth/screen_login.dart';
 import '/widgets/settings/settings_button.dart';
 import '/widgets/settings/settings_switch.dart';
@@ -21,7 +19,6 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
   const ScreenSettings({super.key});
 
   Future<void> _logout(BuildContext context, WidgetRef ref) async {
-    // Show the dialog and wait for user confirmation
     final confirmed = await showTwoOptionDialog(
       context: context,
       title: 'Confirm Logout',
@@ -31,59 +28,57 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
     );
 
     if (confirmed == true) {
-      // Perform logout if confirmed
       await ref.read(authProvider.notifier).logout();
     }
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Consumer(builder: (context, ref, child) {
-      final userData = ref.watch(authProvider);
+    // Watch the user state, but don't handle loading or error states here
+    final user = ref.watch(authProvider).value;
 
-      return userData.when(
-        data: (user) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Settings'),
-            ),
-            body: Padding(
-              padding: Paddings.horizontalPadding,
-              child: Column(
-                children: [
-                  if (user == null) const SizedBox(height: 10),
-                  if (user != null) _buildProfileInfo(user: user),
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Settings'),
+      ),
+      body: Padding(
+        padding: Paddings.horizontalPadding,
+        child: Column(
+          children: [
+            // Show user info if logged in, otherwise show spacing
+            if (user != null) _buildProfileInfo(user: user),
+            if (user == null) const SizedBox(height: 10),
 
-                  // Dark Mode Switch
-                  const AppThemeSwitch(),
+            // Dark Mode Switch
+            const AppThemeSwitch(),
 
-                  const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-                  // Anime Title Language Switch
-                  const AnimeTitleLanguageSwitch(),
+            // Anime Title Language Switch
+            const AnimeTitleLanguageSwitch(),
 
-                  const SizedBox(height: 10),
+            const SizedBox(height: 10),
 
-                  // Login Button or Logout Button
-                  if (user == null)
-                    SettingsButton(
-                      title: 'Login',
-                      onPressed: () => context.push(ScreenLogin.routeName),
-                    ),
-                  if (user != null)
-                    SettingsButton(
-                      title: 'Logout',
-                      onPressed: () => _logout(context, ref),
-                    ),
-                ],
+            // Login or Logout Button
+            if (user == null) ...[
+              SettingsButton(
+                title: 'Login',
+                onPressed: () => context.push(ScreenLogin.routeName),
               ),
-            ),
-          );
-        },
-        error: (error, stackTrace) => ErrorScreen(error: error.toString()),
-        loading: () => const Loader(),
-      );
-    });
+              SettingsButton(
+                title: 'Register',
+                onPressed: () => context.push(ScreenRegister.routeName),
+              ),
+            ],
+            if (user != null)
+              SettingsButton(
+                title: 'Logout',
+                onPressed: () => _logout(context, ref),
+              ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildProfileInfo({required User user}) => ListTile(
@@ -91,8 +86,8 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
         leading: const ProfileTile(
           profileURL: '',
         ),
-        title: Text(user.name ?? ''),
-        subtitle: Text(user.email ?? ''),
+        title: Text(user.name ?? 'Unknown Name'),
+        subtitle: Text(user.email ?? 'No Email'),
       );
 }
 

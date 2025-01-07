@@ -1,16 +1,16 @@
-import 'package:anime_world/common/buttons/round_button.dart';
-import 'package:anime_world/common/mixins/loading_overlay.dart';
-import 'package:anime_world/common/styles/paddings.dart';
-import 'package:anime_world/common/text_fields/email_text_field.dart';
-import 'package:anime_world/common/text_fields/password_text_field.dart';
-import 'package:anime_world/common/utils/validators.dart';
+import 'package:anime_world/common/utils/utils.dart';
 import 'package:anime_world/notifiers/auth_notifier.dart';
+import 'package:anime_world/screens/screen_home.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import '/common/buttons/custom_text_button.dart';
+import '/common/buttons/round_button.dart';
+import '/common/mixins/loading_overlay.dart';
+import '/common/styles/paddings.dart';
+import '/common/text_fields/email_text_field.dart';
+import '/common/text_fields/password_text_field.dart';
 import 'screen_register.dart';
 
 class ScreenLogin extends ConsumerStatefulWidget {
@@ -48,7 +48,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
 
       if (email.isEmpty || password.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('لطفا همه ورودی ها را پر کنید.')),
+          const SnackBar(content: Text('Email and password are necessary.')),
         );
         return;
       }
@@ -60,24 +60,43 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
     }
   }
 
-  /// This method will redirect user to a website to sign in with his/her google account
-  Future<void> _loginWithGoogle() async {
-    // await AdapterAuth().loginWithGoogle(context: context);
-  }
-
   @override
   Widget build(BuildContext context) {
-    final loginButton = SizedBox(
-      width: double.infinity,
-      child: RoundButton(
-        onPressed: () => _login(context),
-        isLoading: false,
-        label: 'ورود',
-      ),
+    final loginButton = Consumer(
+      builder: (context, ref, child) {
+        final auth = ref.watch(authProvider);
+
+        ref.listen(
+          authProvider,
+          (previous, next) {
+            if (next is AsyncData && next.value != null) {
+              // User successfully logged in
+              Utils.showSnackBar(context: context, text: 'Login Successful!');
+
+              // Navigate to home screen
+              context.go(ScreenHome.routeName);
+            } else if (next is AsyncError) {
+              // Login failed
+              Utils.showSnackBar(
+                  context: context, text: 'Login failed: ${next.error}');
+            }
+          },
+        );
+
+        return SizedBox(
+          width: double.infinity,
+          child: RoundButton(
+            backgroundColor: Colors.green,
+            onPressed: () => _login(context),
+            isLoading: auth.isLoading,
+            label: 'Login',
+          ),
+        );
+      },
     );
 
     return Scaffold(
-      appBar: AppBar(title: const Text('ورود')),
+      appBar: AppBar(title: const Text('Login')),
       body: Padding(
         padding: Paddings.defaultPadding,
         child: SingleChildScrollView(
@@ -89,7 +108,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
                 // Email
                 EmailTextField(
                   controller: _emailController,
-                  hintText: 'ایمیل',
+                  hintText: 'Email',
                   onVerify: () {
                     _showVerifyText.value = true;
                   },
@@ -99,26 +118,17 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
                 // Password
                 PasswordTextField(
                   controller: _passwordController,
-                  hintText: 'پسورد',
+                  hintText: 'Password',
                   // validator: Validators.validatePassword,
                 ),
                 // Forget Password
-                TextButton(
-                  style: ButtonStyle(
-                    padding: WidgetStateProperty.all(EdgeInsets.zero),
-                  ),
+                CustomTextButton.endPadding(
                   onPressed: () {
                     // context.push(ScreenVerifyEmail.route);
                   },
-                  child: const Text(
-                    'رمز عبور خود را فراموش کرده اید؟',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
+                  label: 'Forgot Password?',
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 // Login Button
                 loginButton,
                 const SizedBox(height: 24),
@@ -146,10 +156,10 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
   Widget _buildDontHaveAccount() => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('حساب کاربری ندارید؟'),
-          TextButton(
+          const Text('Don\'t have an account?'),
+          CustomTextButton.horizontalPadding(
             onPressed: () => context.push(ScreenRegister.routeName),
-            child: const Text('ثبت نام'),
+            label: 'Register',
           ),
         ],
       );

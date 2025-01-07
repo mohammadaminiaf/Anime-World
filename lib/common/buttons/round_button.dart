@@ -5,7 +5,7 @@ class RoundButton extends StatefulWidget {
     super.key,
     required this.onPressed,
     required this.label,
-    this.backgroundColor = Colors.lightGreenAccent,
+    this.backgroundColor = Colors.green,
     this.labelColor = Colors.white,
     this.isLoading = false,
     this.labelStyle,

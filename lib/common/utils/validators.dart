@@ -41,5 +41,15 @@ sealed class Validators {
     return null;
   }
 
+  static String? validatePhone(String? phone) {
+    RegExp phoneRegex =
+        RegExp(r'^\+?[0-9]{10,15}$'); // Allows optional '+' and 10-15 digits.
+    final isPhoneValid = phoneRegex.hasMatch(phone ?? '');
+    if (!isPhoneValid) {
+      return 'Please enter a valid phone number.';
+    }
+    return null;
+  }
+
   Validators._();
 }
