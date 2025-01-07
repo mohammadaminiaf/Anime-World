@@ -1,58 +1,99 @@
-import 'package:anime_world/constants/app_config.dart';
+import 'package:anime_world/common/mixins/dialog_mixin.dart';
+import 'package:anime_world/common/widgets/profile_tile.dart';
+import 'package:anime_world/core/screens/error_screen.dart';
+import 'package:anime_world/core/widgets/loader.dart';
+import 'package:anime_world/models/auth/user.dart';
+import 'package:anime_world/notifiers/auth_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '/common/styles/paddings.dart';
+import '/constants/app_config.dart';
 import '/cubits/anime_title_language_cubit.dart';
 import '/cubits/theme_cubit.dart';
 import '/screens/auth/screen_login.dart';
 import '/widgets/settings/settings_button.dart';
 import '/widgets/settings/settings_switch.dart';
 
-class ScreenSettings extends StatelessWidget {
+class ScreenSettings extends ConsumerWidget with DialogMixin {
   const ScreenSettings({super.key});
 
+  Future<void> _logout(BuildContext context, WidgetRef ref) async {
+    // Show the dialog and wait for user confirmation
+    final confirmed = await showTwoOptionDialog(
+      context: context,
+      title: 'Confirm Logout',
+      content: 'Are you sure you want to log out?',
+      yesButtonText: 'Logout',
+      noButtonText: 'Cancel',
+    );
+
+    if (confirmed == true) {
+      // Perform logout if confirmed
+      await ref.read(authProvider.notifier).logout();
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Consumer(builder: (context, ref, child) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Settings'),
-        ),
-        body: Padding(
-          padding: Paddings.defaultPadding,
-          child: Column(
-            children: [
-              // Dark Mode Switch
-              const AppThemeSwitch(),
+      final userData = ref.watch(authProvider);
 
-              const SizedBox(height: 10),
+      return userData.when(
+        data: (user) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Settings'),
+            ),
+            body: Padding(
+              padding: Paddings.horizontalPadding,
+              child: Column(
+                children: [
+                  if (user == null) const SizedBox(height: 10),
+                  if (user != null) _buildProfileInfo(user: user),
 
-              // Anime Title Language Switch
-              const AnimeTitleLanguageSwitch(),
+                  // Dark Mode Switch
+                  const AppThemeSwitch(),
 
-              const SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-              // Login Button
-              if (AppConfig().currentUser == null)
-                SettingsButton(
-                  title: 'Login',
-                  onPressed: () => context.push(ScreenLogin.routeName),
-                ),
+                  // Anime Title Language Switch
+                  const AnimeTitleLanguageSwitch(),
 
-              if (AppConfig().currentUser != null)
-                SettingsButton(
-                  title: 'Logout',
-                  onPressed: () {},
-                ),
-            ],
-          ),
-        ),
+                  const SizedBox(height: 10),
+
+                  // Login Button or Logout Button
+                  if (user == null)
+                    SettingsButton(
+                      title: 'Login',
+                      onPressed: () => context.push(ScreenLogin.routeName),
+                    ),
+                  if (user != null)
+                    SettingsButton(
+                      title: 'Logout',
+                      onPressed: () => _logout(context, ref),
+                    ),
+                ],
+              ),
+            ),
+          );
+        },
+        error: (error, stackTrace) => ErrorScreen(error: error.toString()),
+        loading: () => const Loader(),
       );
     });
   }
+
+  Widget _buildProfileInfo({required User user}) => ListTile(
+        contentPadding: EdgeInsets.zero,
+        leading: const ProfileTile(
+          profileURL: '',
+        ),
+        title: Text(user.name ?? ''),
+        subtitle: Text(user.email ?? ''),
+      );
 }
 
 class AppThemeSwitch extends StatelessWidget {

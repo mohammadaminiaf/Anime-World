@@ -1,8 +1,7 @@
-import 'package:anime_world/database_helper/secure_storage_helper.dart';
-
 import '/common/models/api_response.dart';
 import '/common/services/dio_client.dart';
 import '/constants/app_config.dart';
+import '/database_helper/secure_storage_helper.dart';
 import '/models/auth/user.dart';
 import '/repositories/auth_repository.dart';
 
@@ -86,6 +85,22 @@ class AuthRepositoryImpl implements AuthRepository {
         return user;
       }
       return null;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> logout() async {
+    try {
+      final response = await _dio.post('auth/logout', {});
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        AppConfig().resetLoginInfo();
+      }
+
+      return true;
     } catch (e) {
       rethrow;
     }

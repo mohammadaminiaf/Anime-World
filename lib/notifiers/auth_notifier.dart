@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:anime_world/constants/app_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/locator.dart';
@@ -55,6 +56,18 @@ class AuthNotifier extends AutoDisposeAsyncNotifier<User?> {
       state = AsyncData(user);
     } catch (e) {
       state = AsyncError(e.toString(), StackTrace.current);
+    }
+  }
+
+  //! Logout method
+  Future<void> logout() async {
+    try {
+      final response = await authRepo.logout();
+      if (response == true) {
+        await AppConfig().resetLoginInfo();
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 

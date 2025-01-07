@@ -48,24 +48,24 @@ mixin DialogMixin {
                   Expanded(
                     child: RoundButton(
                       height: 40,
-                      onPressed: onYesPressed ??
-                          () {
-                            Navigator.of(context).pop(true); // Close dialog
-                          },
-                      backgroundColor: Colors.red,
-                      label: yesButtonText,
-                    ),
-                  ),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: RoundButton(
-                      height: 40,
                       onPressed: onNoPressed ??
                           () {
                             Navigator.of(context).pop(false); // Close dialog
                           },
                       backgroundColor: Colors.blue,
                       label: noButtonText,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Expanded(
+                    child: RoundButton(
+                      height: 40,
+                      onPressed: onYesPressed ??
+                          () {
+                            Navigator.of(context).pop(true); // Close dialog
+                          },
+                      backgroundColor: Colors.red,
+                      label: yesButtonText,
                     ),
                   ),
                 ],

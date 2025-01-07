@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 
 class Paddings {
+  static const horizontalPadding = EdgeInsets.symmetric(
+    horizontal: 24.0,
+  );
+
   static const defaultPadding = EdgeInsets.symmetric(
     horizontal: 24.0,
     vertical: 36.0,

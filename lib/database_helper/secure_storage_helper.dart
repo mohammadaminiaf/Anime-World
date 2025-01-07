@@ -8,7 +8,7 @@ class SecureStorageHelper {
       );
 
   // Write data to secure storage
-  static putString(String key, String? value) async {
+  static Future putString(String key, String? value) async {
     try {
       final storage = FlutterSecureStorage(aOptions: _getAndroidOptions());
       await storage.write(key: key, value: value);
@@ -25,7 +25,7 @@ class SecureStorageHelper {
   }
 
   // Save a map to secure storage
-  static putMap(String key, Map<String, dynamic>? map) async {
+  static Future putMap(String key, Map<String, dynamic>? map) async {
     final json = jsonEncode(map);
     await putString(key, json);
   }
