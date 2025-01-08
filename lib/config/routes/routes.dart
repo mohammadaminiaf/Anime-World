@@ -5,6 +5,7 @@ import '/common/screens/screen_full_images_view.dart';
 import '/core/screens/error_screen.dart';
 import '/models/anime_category.dart';
 import '/models/auth/user.dart';
+import '/screens/animes/screen_favorite_animes.dart';
 import '/screens/auth/screen_login.dart';
 import '/screens/auth/screen_register.dart';
 import '/screens/category_animes_screen.dart';
@@ -102,6 +103,12 @@ class AppRouter {
           final user = state.extra as User?;
           return ScreenUpdateProfile(user: user);
         },
+      ),
+
+      //! Screen Favorite Animes
+      GoRoute(
+        path: ScreenFavoriteAnimes.routeName,
+        builder: (context, state) => const ScreenFavoriteAnimes(),
       ),
     ],
   );

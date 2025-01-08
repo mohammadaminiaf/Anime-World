@@ -4,11 +4,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
+import '/common/models/api_response.dart';
+import '/common/services/dio_client.dart';
 import '/models/anime.dart';
 import '/models/anime_details.dart';
+import '/models/movies/movie.dart';
 import '/repositories/animes_repository.dart';
 
 class AnimesRepositoryImpl implements AnimesRepository {
+  final DioClient dioService;
+  AnimesRepositoryImpl({required this.dioService});
+
   //! Method to fetch all animes
   @override
   Future<Iterable<Anime>> fetchAnimesByRanking({
@@ -75,6 +81,63 @@ class AnimesRepositoryImpl implements AnimesRepository {
         debugPrint('Code: ${response.statusCode}');
         debugPrint('Error: ${response.body}');
         throw Exception('Could Not Get Data!');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<Movie>> fetchFavoriteAnimes() async {
+    try {
+      final response = await dioService.get('movies/favorite');
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        final data = apiResponse.data['data'];
+        final favoriteAnimes = List<Movie>.from(
+          data.map((json) => Movie.fromJson(json)).toList(),
+        );
+        print('hello world');
+        return favoriteAnimes;
+      } else {
+        throw Exception(apiResponse.message ?? 'Failed to get favorite animes');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<Movie> createFavoriteAnime({required Movie movie}) async {
+    try {
+      final response = await dioService.post(
+        'movies/favorite',
+        movie.toJson(),
+      );
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        final data = apiResponse.data['data'];
+        final anime = Movie.fromJson(data);
+
+        return anime;
+      } else {
+        throw Exception(apiResponse.message ?? 'Failed to get favorite animes');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteFavoriteAnime({required int id}) async {
+    try {
+      final response = await dioService.delete('movies/favorite/$id', {});
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode != 200) {
+        throw Exception(apiResponse.message ?? 'Failed to get favorite animes');
       }
     } catch (e) {
       rethrow;

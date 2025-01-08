@@ -1,3 +1,7 @@
+import 'package:anime_world/common/buttons/flat_button.dart';
+import 'package:anime_world/models/anime_node.dart';
+import 'package:anime_world/models/movies/movie.dart';
+import 'package:anime_world/notifiers/favorite_animes_notifier.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -49,6 +53,7 @@ class ScreenAnimeDetails extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      _buildAddToFavoritesButton(anime),
                       // Title
                       _buildAnimeName(
                         defaultName: anime.title,
@@ -110,6 +115,34 @@ class ScreenAnimeDetails extends ConsumerWidget {
         loading: () => const Loader(),
       ),
     );
+  }
+
+  Widget _buildAddToFavoritesButton(AnimeDetails anime) {
+    return Consumer(builder: (context, ref, child) {
+      final favoriteAnimes = ref.watch(favoriteAnimesProvider);
+
+      return Padding(
+        padding: const EdgeInsets.only(bottom: 12.0),
+        child: FlatButton(
+          isLoading: favoriteAnimes.isLoading,
+          onPressed: () async {
+            final movie = Movie(
+              id: anime.id,
+              title: anime.title,
+              englishTitle: anime.alternativeTitles.en,
+              imageUrl: anime.mainPicture.medium,
+              genres: anime.genres.map((genre) => genre.name).toList(),
+              rating: anime.mean,
+            );
+
+            await ref
+                .read(favoriteAnimesProvider.notifier)
+                .addFavoriteAnime(movie: movie);
+          },
+          label: 'Add to Favorite',
+        ),
+      );
+    });
   }
 
   Widget _buildAnimeImage({

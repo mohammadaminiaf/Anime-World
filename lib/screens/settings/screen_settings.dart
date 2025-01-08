@@ -1,3 +1,4 @@
+import 'package:anime_world/screens/animes/screen_favorite_animes.dart';
 import 'package:anime_world/screens/auth/screen_register.dart';
 import 'package:anime_world/screens/settings/screen_update_profile.dart';
 import 'package:flutter/material.dart';
@@ -47,7 +48,7 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
         child: Column(
           children: [
             // Show user info if logged in, otherwise show spacing
-            if (user != null) _buildProfileInfo(user: user),
+            // if (user != null) _buildProfileInfo(user: user),
             if (user == null) const SizedBox(height: 10),
 
             // Dark Mode Switch
@@ -72,6 +73,13 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
               ),
             ],
             if (user != null) ...[
+              SettingsButton(
+                title: 'Favorite Animes',
+                onPressed: () => context.push(
+                  ScreenFavoriteAnimes.routeName,
+                  extra: user,
+                ),
+              ),
               SettingsButton(
                 title: 'Update Profile',
                 onPressed: () => context.push(
