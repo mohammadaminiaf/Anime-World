@@ -1,3 +1,4 @@
+import '/common/models/pagination_data.dart';
 import '/models/anime.dart';
 import '/models/anime_details.dart';
 import '/models/movies/movie.dart';
@@ -13,7 +14,7 @@ abstract class AnimesRepository {
   Future<AnimeDetails> fetchAnimeById(int id);
 
   //! Methods to work with favorite animes
-  Future<List<Movie>> fetchFavoriteAnimes();
+  Future<PaginationData<Movie>> fetchFavoriteAnimes(int pageNum);
   Future<Movie> createFavoriteAnime({required Movie movie});
   Future<void> deleteFavoriteAnime({required int id});
 }

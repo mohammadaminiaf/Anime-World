@@ -1,31 +1,57 @@
 import 'dart:async';
 
-import 'package:anime_world/locator.dart';
-import 'package:anime_world/repositories/animes_repository.dart';
+import 'package:anime_world/common/models/pagination.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '/locator.dart';
 import '/models/movies/movie.dart';
+import '/repositories/animes_repository.dart';
 
 class FavoriteAnimesNotifier extends AutoDisposeAsyncNotifier<List<Movie>> {
   final AnimesRepository animesRepo;
   FavoriteAnimesNotifier({required this.animesRepo});
 
+  Pagination pagination = Pagination(currentPage: 1, lastPage: 0);
+
   @override
   FutureOr<List<Movie>> build() async {
-    final animes = await getAllFavoriteAnimes();
+    final animes = await getAllFavoriteAnimes(true);
     return animes;
   }
 
   /// Get all favorite animes
-  Future<List<Movie>> getAllFavoriteAnimes() async {
+  Future<List<Movie>> getAllFavoriteAnimes(bool isFirstFetch) async {
     try {
-      state = const AsyncLoading();
+      if (isFirstFetch) {
+        state = const AsyncLoading();
 
-      final favoriteAnimes = await animesRepo.fetchFavoriteAnimes();
+        final response = await animesRepo.fetchFavoriteAnimes(1);
+        pagination.currentPage = response.currentPage ?? 1;
+        pagination.lastPage = response.lastPage ?? 0;
 
-      state = AsyncData(favoriteAnimes);
+        final favoriteAnimes = response.data;
 
-      return favoriteAnimes;
+        state = AsyncData(favoriteAnimes);
+
+        return favoriteAnimes;
+      } else {
+        if (pagination.currentPage >= pagination.lastPage) return [];
+
+        final newPage = pagination.currentPage + 1;
+        final response = await animesRepo.fetchFavoriteAnimes(newPage);
+        pagination.currentPage = response.currentPage ?? 1;
+        pagination.lastPage = response.lastPage ?? 0;
+
+        final favoriteAnimes = response.data;
+        final currentAnimes = state.value ?? [];
+
+        final updatedAnimes = List<Movie>.from(currentAnimes)
+          ..addAll(favoriteAnimes);
+
+        state = AsyncData(updatedAnimes);
+
+        return updatedAnimes;
+      }
     } catch (e) {
       state = AsyncError(e.toString(), StackTrace.current);
     }

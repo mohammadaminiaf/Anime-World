@@ -35,7 +35,7 @@ class ScreenFavoriteAnimes extends ConsumerWidget {
   }
 }
 
-class FavoriteAnimesView extends StatelessWidget {
+class FavoriteAnimesView extends ConsumerStatefulWidget {
   const FavoriteAnimesView({
     super.key,
     required this.animes,
@@ -44,11 +44,32 @@ class FavoriteAnimesView extends StatelessWidget {
   final List<Movie> animes;
 
   @override
+  ConsumerState<FavoriteAnimesView> createState() => _FavoriteAnimesViewState();
+}
+
+class _FavoriteAnimesViewState extends ConsumerState<FavoriteAnimesView> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_handlePagination);
+  }
+
+  void _handlePagination() {
+    if (_scrollController.position.maxScrollExtent ==
+        _scrollController.position.pixels) {
+      ref.read(favoriteAnimesProvider.notifier).getAllFavoriteAnimes(false);
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      itemCount: animes.length,
+      controller: _scrollController,
+      itemCount: widget.animes.length,
       itemBuilder: (context, index) {
-        final anime = animes[index];
+        final anime = widget.animes[index];
 
         return FavoriteAnimeCard(
           anime: anime,

@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 import '/common/models/api_response.dart';
+import '/common/models/pagination_data.dart';
 import '/common/services/dio_client.dart';
 import '/models/anime.dart';
 import '/models/anime_details.dart';
@@ -88,16 +89,19 @@ class AnimesRepositoryImpl implements AnimesRepository {
   }
 
   @override
-  Future<List<Movie>> fetchFavoriteAnimes() async {
+  Future<PaginationData<Movie>> fetchFavoriteAnimes(int pageNum) async {
     try {
-      final response = await dioService.get('movies/favorite');
+      final response =
+          await dioService.get('movies/favorite', queryParameters: {
+        'page_num': pageNum,
+        'page_size': 6,
+      });
       final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
 
       if (apiResponse.statusCode == 200) {
-        final data = apiResponse.data['data'];
-        final favoriteAnimes = List<Movie>.from(
-          data.map((json) => Movie.fromJson(json)).toList(),
-        );
+        final data = apiResponse.data;
+        final favoriteAnimes = PaginationData.fromJson(data, Movie.fromJson);
+
         print('hello world');
         return favoriteAnimes;
       } else {
