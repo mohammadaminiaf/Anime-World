@@ -1,4 +1,5 @@
 import '/models/auth/user.dart';
+import '/models/params/update_profile_params.dart';
 
 abstract class AuthRepository {
   //! Method to register user
@@ -21,4 +22,10 @@ abstract class AuthRepository {
 
   //! Method to get current user locally
   Future<User?> getCurrentUserLocal();
+
+  //! Update user method
+  Future<User?> updateUser({required UpdateProfileParams user});
+
+  //! Update user local
+  Future<void> updateUserLocal({required User? user});
 }

@@ -1,8 +1,11 @@
+import 'package:dio/dio.dart';
+
 import '/common/models/api_response.dart';
 import '/common/services/dio_client.dart';
 import '/constants/app_config.dart';
 import '/database_helper/secure_storage_helper.dart';
 import '/models/auth/user.dart';
+import '/models/params/update_profile_params.dart';
 import '/repositories/auth_repository.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
@@ -106,5 +109,59 @@ class AuthRepositoryImpl implements AuthRepository {
     } catch (e) {
       rethrow;
     }
+  }
+
+  @override
+  Future<User?> updateUser({required UpdateProfileParams user}) async {
+    try {
+      final image = user.profilePhoto;
+
+      final formData = FormData.fromMap({
+        'name': user.name,
+        if (user.email != null) 'email': user.email,
+        if (user.phone != null) 'phone': user.phone,
+        // if (user.profilePhoto != null)
+        //   'profile_photo': await MultipartFile.fromFile(
+        //     path,
+        //     filename: path.split('/').last,
+        //   ),
+      });
+
+      if (image != null) {
+        final fileBytes = await image.readAsBytes();
+        final name = image.path.split('/').last;
+        final imageData = MultipartFile.fromBytes(
+          fileBytes,
+          filename: name,
+        );
+
+        formData.files.add(MapEntry('profile_photo', imageData));
+      }
+
+      final response = await _dio.put(
+        'user/${user.userId}',
+        formData,
+      );
+
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        final user = User.fromJson(apiResponse.data);
+
+        //! Update user locally and in global variables
+        AppConfig().saveLoginInfo(user);
+
+        return user;
+      }
+    } catch (e) {
+      rethrow;
+    }
+    return null;
+  }
+
+  @override
+  Future<void> updateUserLocal({required User? user}) {
+    // TODO: implement updateUserLocal
+    throw UnimplementedError();
   }
 }

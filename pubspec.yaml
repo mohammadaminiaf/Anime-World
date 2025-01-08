@@ -26,6 +26,8 @@ dependencies:
   get_it: ^8.0.3
   dio: ^5.7.0
   flutter_secure_storage: ^9.2.3
+  image_cropper: ^8.1.0
+  image_picker: ^1.1.2
 
 dev_dependencies:
   flutter_test:

@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+import '/constants/endpoints.dart';
 
 class ProfileTile extends StatelessWidget {
   final String? profileURL;
@@ -9,6 +13,9 @@ class ProfileTile extends StatelessWidget {
   final String? text;
   final double radius;
   final double iconSize;
+  final bool isLocal;
+  final Color borderColor;
+  final double borderWidth;
 
   const ProfileTile({
     super.key,
@@ -18,6 +25,9 @@ class ProfileTile extends StatelessWidget {
     this.text,
     this.radius = 20.0,
     this.iconSize = 24.0,
+    this.isLocal = false,
+    this.borderColor = Colors.white,
+    this.borderWidth = 2.0,
   });
 
   /// Determines the middle character-based color index from `Colors.primaries`.
@@ -45,133 +55,35 @@ class ProfileTile extends StatelessWidget {
     final avatarIcon = Icon(
       isGroup ? CupertinoIcons.person_3_fill : CupertinoIcons.person_fill,
       color: theme.scaffoldBackgroundColor,
-      size: iconSize,
+      size: radius + (radius / 5),
     );
+
+    final image = (isLocal && profileURL != null)
+        ? Image.file(
+            File(profileURL!),
+            fit: BoxFit.cover,
+          )
+        : CachedNetworkImage(
+            imageUrl: Endpoints.getImage(profileURL!),
+            fit: BoxFit.cover,
+            placeholder: (context, url) =>
+                const CircularProgressIndicator.adaptive(),
+            errorWidget: (context, url, error) => avatarIcon,
+          );
 
     return GestureDetector(
       onTap: onTap,
       child: CircleAvatar(
-        radius: radius,
-        backgroundColor: Colors.primaries[_getColorIndexFromText()],
-        child: profileURL == null || profileURL!.isEmpty
-            ? avatarIcon
-            : ClipOval(
-                child: CachedNetworkImage(
-                  imageUrl: profileURL!,
-                  fit: BoxFit.cover,
-                  placeholder: (context, url) =>
-                      const CircularProgressIndicator.adaptive(),
-                  errorWidget: (context, url, error) => avatarIcon,
-                ),
-              ),
+        backgroundColor: Colors.white,
+        radius: radius + borderWidth,
+        child: CircleAvatar(
+          radius: radius,
+          backgroundColor: Colors.primaries[_getColorIndexFromText()],
+          child: profileURL == null || profileURL!.isEmpty
+              ? avatarIcon
+              : ClipOval(child: image),
+        ),
       ),
     );
   }
 }
-
-// import 'package:cached_network_image/cached_network_image.dart';
-// import 'package:flutter/cupertino.dart';
-// import 'package:flutter/material.dart';
-
-// class ProfileTile extends StatelessWidget {
-//   final void Function()? onTap;
-//   final bool? isGroup;
-//   final String? text;
-//   final double? radius;
-//   final double? iconSize;
-
-//   const ProfileTile({
-//     super.key,
-//     required this.profileURL,
-//     this.isGroup,
-//     this.radius,
-//     this.onTap,
-//     this.text,
-//     this.iconSize,
-//   });
-
-//   final String? profileURL;
-
-//   int checkMiddleCharacter() {
-//     if (text == null) {
-//       return 1; // Return -1 for null or empty text
-//     }
-
-//     int midIndex = text!.length ~/ 2;
-//     String? middleChar;
-
-//     if (text != null && text!.isNotEmpty) {
-//       int midIndex = text!.length ~/ 2;
-//       middleChar =
-//           text!.length % 2 == 0 ? text![midIndex - 1] : text![midIndex];
-//     } else {
-//       middleChar = null; // Handle the case where the string is null or empty
-//     }
-
-//     switch (middleChar) {
-//       case 'a':
-//         return 1;
-//       case 'b':
-//         return 2;
-//       case 'c':
-//         return 3;
-//       case 'd':
-//         return 4;
-//       case 'e':
-//         return 5;
-//       case 'f':
-//         return 6;
-//       case 'g':
-//         return 7;
-//       case 'h':
-//         return 8;
-//       case 'i':
-//         return 9;
-//       case 'j':
-//         return 10;
-//       case 'k':
-//         return 11;
-//       case 'l':
-//         return 12;
-//       default:
-//         return 0; // Return 0 if the middle character is not in the specified list
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     final theme = Theme.of(context);
-//     final avatarChild = isGroup == true
-//         ? Icon(
-//             CupertinoIcons.person_3_fill,
-//             color: theme.scaffoldBackgroundColor,
-//             size: iconSize ?? 30,
-//           )
-//         : Icon(
-//             CupertinoIcons.person_fill,
-//             color: theme.scaffoldBackgroundColor,
-//             size: iconSize ?? 30,
-//           );
-
-//     var circleAvatar = CircleAvatar(
-//       radius: radius ?? 17,
-//       backgroundColor: Colors.primaries[checkMiddleCharacter()],
-//       child: profileURL == null || profileURL?.isEmpty == true
-//           ? avatarChild
-//           : ClipRRect(
-//               borderRadius: BorderRadius.circular(radius ?? 100),
-//               child: CachedNetworkImage(
-//                 imageUrl: profileURL ?? '',
-//                 fit: BoxFit.cover,
-//                 placeholder: (context, url) =>
-//                     const CircularProgressIndicator.adaptive(),
-//                 errorWidget: (context, url, error) => avatarChild,
-//               ),
-//             ),
-//     );
-//     return GestureDetector(
-//       onTap: onTap,
-//       child: circleAvatar,
-//     );
-//   }
-// }

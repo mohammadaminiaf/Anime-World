@@ -1,10 +1,11 @@
 import 'dart:async';
 
-import 'package:anime_world/constants/app_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '/constants/app_config.dart';
 import '/locator.dart';
 import '/models/auth/user.dart';
+import '/models/params/update_profile_params.dart';
 import '/repositories/auth_repository.dart';
 
 class AuthNotifier extends AutoDisposeAsyncNotifier<User?> {
@@ -82,6 +83,19 @@ class AuthNotifier extends AutoDisposeAsyncNotifier<User?> {
       state = AsyncError(e.toString(), StackTrace.current);
     }
     return null;
+  }
+
+  //! Update profile method
+  Future<void> updateUser({required UpdateProfileParams user}) async {
+    try {
+      state = const AsyncLoading();
+
+      final updatedUser = await authRepo.updateUser(user: user);
+
+      state = AsyncData(updatedUser);
+    } catch (e) {
+      state = AsyncError(e.toString(), StackTrace.current);
+    }
   }
 }
 

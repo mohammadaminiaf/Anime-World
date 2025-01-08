@@ -1,3 +1,4 @@
+import 'package:anime_world/constants/endpoints.dart';
 import 'package:dio/dio.dart';
 
 import '/common/services/app_interceptors.dart';
@@ -44,7 +45,7 @@ class DioClient {
 
   static Dio createDio() {
     final dio = Dio()
-      ..options.baseUrl = 'http://10.10.10.252:8000/'
+      ..options.baseUrl = Endpoints.baseUrl
       ..options.connectTimeout = const Duration(seconds: 30)
       ..options.receiveTimeout = const Duration(seconds: 30)
       ..options.headers = {

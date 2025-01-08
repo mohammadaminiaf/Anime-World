@@ -1,6 +1,8 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:dio/dio.dart';
 
+import '/constants/app_config.dart';
+
 class AppInterceptors extends Interceptor {
   //! Handle what happens when you make a request
   @override
@@ -19,10 +21,10 @@ class AppInterceptors extends Interceptor {
       );
     }
 
-    // final token = GlobalState.instance.userToken;
-    // if (token != null && token.isNotEmpty) {
-    //   options.headers.putIfAbsent('Authorization', () => 'Bearer $token');
-    // }
+    final token = AppConfig().accessToken;
+    if (token != null && token.isNotEmpty) {
+      options.headers.putIfAbsent('Authorization', () => 'Bearer $token');
+    }
 
     return handler.next(options);
   }

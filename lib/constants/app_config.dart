@@ -18,7 +18,7 @@ class AppConfig {
   }
 
   //! Save user credentials to local storage
-  Future<void> saveLoginInfo(User? user, String? token) async {
+  Future<void> saveLoginInfo([User? user, String? token]) async {
     if (user != null) {
       currentUser = user;
       await SecureStorageHelper.putMap('user', user.toJson());

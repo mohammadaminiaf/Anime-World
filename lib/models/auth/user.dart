@@ -5,6 +5,7 @@ class User {
   final String? email;
   final String? phone;
   final bool? isAuthenticated;
+  final String? profileUrl;
 
   const User({
     required this.id,
@@ -13,6 +14,7 @@ class User {
     this.email,
     this.phone,
     this.isAuthenticated = false,
+    this.profileUrl,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -23,6 +25,7 @@ class User {
       email: json['email'],
       phone: json['phone'],
       isAuthenticated: json['is_authenticated'],
+      profileUrl: json['profile_photo'],
     );
   }
 
@@ -33,5 +36,6 @@ class User {
         'email': email,
         'phone': phone,
         'is_authenticated': isAuthenticated,
+        'profile_photo': profileUrl,
       };
 }

@@ -1,17 +1,19 @@
-import 'package:anime_world/common/screens/screen_full_images_view.dart';
-import 'package:anime_world/screens/auth/screen_login.dart';
-import 'package:anime_world/screens/auth/screen_register.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../common/widgets/screen_image_view.dart';
+import '/common/screens/screen_full_images_view.dart';
 import '/core/screens/error_screen.dart';
 import '/models/anime_category.dart';
-import '../../screens/screen_anime_details.dart';
+import '/models/auth/user.dart';
+import '/screens/auth/screen_login.dart';
+import '/screens/auth/screen_register.dart';
 import '/screens/category_animes_screen.dart';
-import '../../screens/screen_home.dart';
+import '/screens/settings/screen_update_profile.dart';
 import '/screens/view_all_animes_screen.dart';
 import '/screens/view_all_seasonal_animes_screen.dart';
+import '../../common/widgets/screen_image_view.dart';
+import '../../screens/screen_anime_details.dart';
+import '../../screens/screen_home.dart';
 
 class AppRouter {
   static final GoRouter router = GoRouter(
@@ -90,6 +92,15 @@ class AppRouter {
         builder: (context, state) {
           final String imageUrl = state.extra as String? ?? '';
           return ScreenImageView(url: imageUrl);
+        },
+      ),
+
+      //! Sceen update profile
+      GoRoute(
+        path: ScreenUpdateProfile.routeName,
+        builder: (context, state) {
+          final user = state.extra as User?;
+          return ScreenUpdateProfile(user: user);
         },
       ),
     ],

@@ -1,4 +1,5 @@
 import 'package:anime_world/screens/auth/screen_register.dart';
+import 'package:anime_world/screens/settings/screen_update_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -70,24 +71,38 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
                 onPressed: () => context.push(ScreenRegister.routeName),
               ),
             ],
-            if (user != null)
+            if (user != null) ...[
+              SettingsButton(
+                title: 'Update Profile',
+                onPressed: () => context.push(
+                  ScreenUpdateProfile.routeName,
+                  extra: user,
+                ),
+              ),
               SettingsButton(
                 title: 'Logout',
                 onPressed: () => _logout(context, ref),
               ),
+            ]
           ],
         ),
       ),
     );
   }
 
-  Widget _buildProfileInfo({required User user}) => ListTile(
-        contentPadding: EdgeInsets.zero,
-        leading: const ProfileTile(
-          profileURL: '',
+  Widget _buildProfileInfo({required User user}) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: Card(
+          color: Colors.white.withAlpha(50),
+          margin: EdgeInsets.zero,
+          child: ListTile(
+            contentPadding:
+                const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+            leading: ProfileTile(radius: 30, profileURL: user.profileUrl),
+            title: Text(user.name),
+            subtitle: Text(user.email ?? 'No Email'),
+          ),
         ),
-        title: Text(user.name ?? 'Unknown Name'),
-        subtitle: Text(user.email ?? 'No Email'),
       );
 }
 
