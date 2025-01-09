@@ -3,6 +3,7 @@ import 'package:anime_world/common/utils/utils.dart';
 import 'package:anime_world/models/anime_node.dart';
 import 'package:anime_world/models/movies/movie.dart';
 import 'package:anime_world/notifiers/favorite_animes_notifier.dart';
+import 'package:anime_world/notifiers/favorite_animes_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -121,23 +122,25 @@ class ScreenAnimeDetails extends ConsumerWidget {
   Widget _buildAddToFavoritesButton(AnimeDetails anime) {
     return Consumer(
       builder: (context, ref, child) {
-        final favoriteAnimes = ref.watch(favoriteAnimesProvider);
+        final favoriteAnimesState = ref.watch(favoriteAnimesProvider);
 
-        ref.listen(
+        ref.listen<FavoriteAnimesState>(
           favoriteAnimesProvider,
           (previous, next) {
-            if (previous is AsyncLoading &&
-                next is AsyncData &&
-                next.value != null) {
+            // Show success snackbar when adding succeeds
+            if (previous?.isAdding == true &&
+                next.isAdding == false &&
+                next.errorMessage == null) {
               Utils.showSnackBar(
                 context: context,
-                text: 'Animes was successfully added as favorite',
+                text: 'Anime was successfully added to favorites!',
               );
-            } else if (next is AsyncError) {
-              // Login failed
+            }
+            // Show error snackbar if adding fails
+            else if (previous?.isAdding == true && next.errorMessage != null) {
               Utils.showSnackBar(
                 context: context,
-                text: next.error.toString(),
+                text: 'Failed to add anime: ${next.errorMessage}',
               );
             }
           },
@@ -146,22 +149,25 @@ class ScreenAnimeDetails extends ConsumerWidget {
         return Padding(
           padding: const EdgeInsets.only(bottom: 12.0),
           child: FlatButton(
-            isLoading: favoriteAnimes.isLoading,
-            onPressed: () async {
-              final movie = Movie(
-                id: anime.id,
-                title: anime.title,
-                englishTitle: anime.alternativeTitles.en,
-                imageUrl: anime.mainPicture.medium,
-                genres: anime.genres.map((genre) => genre.name).toList(),
-                rating: anime.mean,
-              );
+            label: 'Add to Favorites',
+            isLoading: favoriteAnimesState.isAdding,
+            onPressed: favoriteAnimesState.isAdding
+                ? null // Disable the button while loading
+                : () async {
+                    final movie = Movie(
+                      id: anime.id,
+                      title: anime.title,
+                      englishTitle: anime.alternativeTitles.en,
+                      imageUrl: anime.mainPicture.medium,
+                      genres: anime.genres.map((genre) => genre.name).toList(),
+                      rating: anime.mean,
+                    );
 
-              await ref
-                  .read(favoriteAnimesProvider.notifier)
-                  .addFavoriteAnime(movie: movie);
-            },
-            label: 'Add to Favorite',
+                    // Trigger the add action
+                    await ref
+                        .read(favoriteAnimesProvider.notifier)
+                        .addFavoriteAnime(movie: movie);
+                  },
           ),
         );
       },

@@ -1,6 +1,8 @@
+import 'package:anime_world/screens/screen_anime_details.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
@@ -20,15 +22,15 @@ class ScreenFavoriteAnimes extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Favorite Animes'),
       ),
-      body: animesData.when(
-        data: (animes) {
-          return FavoriteAnimesView(animes: animes);
-        },
-        error: (error, stackTrace) {
-          return ErrorScreen(error: error.toString());
-        },
-        loading: () {
-          return const Loader();
+      body: Consumer(
+        builder: (context, ref, child) {
+          if (animesData.isLoading) {
+            return const Loader();
+          } else if (animesData.errorMessage != null) {
+            return ErrorScreen(error: animesData.errorMessage!);
+          } else {
+            return FavoriteAnimesView(animes: animesData.animes);
+          }
         },
       ),
     );
@@ -59,7 +61,7 @@ class _FavoriteAnimesViewState extends ConsumerState<FavoriteAnimesView> {
   void _handlePagination() {
     if (_scrollController.position.maxScrollExtent ==
         _scrollController.position.pixels) {
-      ref.read(favoriteAnimesProvider.notifier).getAllFavoriteAnimes(false);
+      ref.read(favoriteAnimesProvider.notifier).fetchFavoriteAnimes(false);
     }
   }
 
@@ -89,85 +91,90 @@ class FavoriteAnimeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 5,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Movie Image
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(10),
-              topRight: Radius.circular(10),
+    return GestureDetector(
+      onTap: () {
+        context.push(ScreenAnimeDetails.routeName, extra: anime.id);
+      },
+      child: Card(
+        elevation: 5,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Movie Image
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(10),
+                topRight: Radius.circular(10),
+              ),
+              child: CachedNetworkImage(
+                imageUrl: anime.imageUrl ?? '',
+                height: 200,
+                width: double.infinity,
+                fit: BoxFit.cover,
+              ),
             ),
-            child: CachedNetworkImage(
-              imageUrl: anime.imageUrl ?? '',
-              height: 200,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Movie Title
-                Text(
-                  anime.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                // Genres
-                Text(
-                  anime.genres.join(', '),
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                  ),
-                ),
-                const SizedBox(height: 10),
-                // Rating
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.star,
-                      color: Colors.amber,
-                      size: 20,
+            Padding(
+              padding: const EdgeInsets.all(10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Movie Title
+                  Text(
+                    anime.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(width: 5),
-                    Text(
-                      anime.rating.toString(),
-                      style: const TextStyle(
-                        fontSize: 16,
+                  ),
+                  const SizedBox(height: 5),
+                  // Genres
+                  Text(
+                    anime.genres.join(', '),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: Colors.grey[600],
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  // Rating
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                        size: 20,
                       ),
-                    ),
-                    const Spacer(),
-                    Consumer(builder: (context, ref, child) {
-                      return IconButton(
-                        onPressed: () async {
-                          ref
-                              .read(favoriteAnimesProvider.notifier)
-                              .removeFavoriteAnime(id: anime.id);
-                        },
-                        icon: const Icon(
-                          Icons.delete,
-                          color: Colors.red,
+                      const SizedBox(width: 5),
+                      Text(
+                        anime.rating.toString(),
+                        style: const TextStyle(
+                          fontSize: 16,
                         ),
-                      );
-                    }),
-                  ],
-                ),
-              ],
+                      ),
+                      const Spacer(),
+                      Consumer(builder: (context, ref, child) {
+                        return IconButton(
+                          onPressed: () async {
+                            ref
+                                .read(favoriteAnimesProvider.notifier)
+                                .removeFavoriteAnime(id: anime.id);
+                          },
+                          icon: const Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                          ),
+                        );
+                      }),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

@@ -25,7 +25,7 @@ class FlatButton extends StatefulWidget {
     this.isExpanded = false,
   });
 
-  final VoidCallback onPressed;
+  final VoidCallback? onPressed;
   final String label;
   final Color backgroundColor;
   final Color labelColor;

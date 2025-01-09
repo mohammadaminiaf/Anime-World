@@ -1,103 +1,119 @@
-import 'dart:async';
-
 import 'package:anime_world/common/models/pagination.dart';
+import 'package:anime_world/locator.dart';
+import 'package:anime_world/models/movies/movie.dart';
+import 'package:anime_world/notifiers/favorite_animes_state.dart';
+import 'package:anime_world/repositories/animes_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '/locator.dart';
-import '/models/movies/movie.dart';
-import '/repositories/animes_repository.dart';
-
-class FavoriteAnimesNotifier extends AutoDisposeAsyncNotifier<List<Movie>> {
+class FavoriteAnimesNotifier extends StateNotifier<FavoriteAnimesState> {
   final AnimesRepository animesRepo;
-  FavoriteAnimesNotifier({required this.animesRepo});
-
   Pagination pagination = Pagination(currentPage: 1, lastPage: 0);
 
-  @override
-  FutureOr<List<Movie>> build() async {
-    final animes = await getAllFavoriteAnimes(true);
-    return animes;
+  FavoriteAnimesNotifier({required this.animesRepo})
+      : super(const FavoriteAnimesState());
+
+  /// Initialize and fetch initial data
+  Future<void> init() async {
+    try {
+      state = state.copyWith(isLoading: true);
+
+      final response = await animesRepo.fetchFavoriteAnimes(1);
+      pagination.currentPage = response.currentPage ?? 1;
+      pagination.lastPage = response.lastPage ?? 0;
+
+      state = state.copyWith(
+        isLoading: false,
+        animes: response.data,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      );
+    }
   }
 
-  /// Get all favorite animes
-  Future<List<Movie>> getAllFavoriteAnimes(bool isFirstFetch) async {
+  Future<void> fetchFavoriteAnimes(bool isFirstFetch) async {
     try {
       if (isFirstFetch) {
-        state = const AsyncLoading();
+        state = state.copyWith(isLoading: true);
 
         final response = await animesRepo.fetchFavoriteAnimes(1);
         pagination.currentPage = response.currentPage ?? 1;
         pagination.lastPage = response.lastPage ?? 0;
 
-        final favoriteAnimes = response.data;
-
-        state = AsyncData(favoriteAnimes);
-
-        return favoriteAnimes;
+        state = state.copyWith(
+          isLoading: false,
+          animes: response.data,
+        );
       } else {
-        if (pagination.currentPage >= pagination.lastPage) return [];
+        if (pagination.currentPage >= pagination.lastPage) return;
+
+        state = state.copyWith(isLoadingMore: true);
 
         final newPage = pagination.currentPage + 1;
         final response = await animesRepo.fetchFavoriteAnimes(newPage);
         pagination.currentPage = response.currentPage ?? 1;
         pagination.lastPage = response.lastPage ?? 0;
 
-        final favoriteAnimes = response.data;
-        final currentAnimes = state.value ?? [];
-
-        final updatedAnimes = List<Movie>.from(currentAnimes)
-          ..addAll(favoriteAnimes);
-
-        state = AsyncData(updatedAnimes);
-
-        return updatedAnimes;
+        state = state.copyWith(
+          isLoadingMore: false,
+          animes: List.of(state.animes)..addAll(response.data),
+        );
       }
     } catch (e) {
-      state = AsyncError(e.toString(), StackTrace.current);
+      state = state.copyWith(
+        isLoading: false,
+        isLoadingMore: false,
+        errorMessage: e.toString(),
+      );
     }
-
-    return [];
   }
 
-  // Add a favorite movie
   Future<void> addFavoriteAnime({required Movie movie}) async {
     try {
-      state = const AsyncLoading();
+      state = state.copyWith(isAdding: true);
 
       final favoriteMovie = await animesRepo.createFavoriteAnime(movie: movie);
-      final animes = state.value ?? [];
-      animes.add(favoriteMovie);
 
-      state = AsyncData(animes);
+      state = state.copyWith(
+        isAdding: false,
+        animes: List.of(state.animes)..add(favoriteMovie),
+      );
     } catch (e) {
-      state = AsyncError(e.toString(), StackTrace.current);
+      state = state.copyWith(
+        isAdding: false,
+        errorMessage: e.toString(),
+      );
     }
   }
 
-  // Remove a favorite anime
   Future<void> removeFavoriteAnime({required int id}) async {
     try {
-      state = const AsyncLoading();
+      state = state.copyWith(isRemoving: true);
 
       await animesRepo.deleteFavoriteAnime(id: id);
 
-      final movies = state.value?.cast<Movie>() ?? [];
-      final List<Movie> updatedAnimes = List.from(
-        movies.where((anime) => anime.id != id).toList() ?? [],
+      state = state.copyWith(
+        isRemoving: false,
+        animes: List.of(state.animes)..removeWhere((anime) => anime.id == id),
       );
-
-      state = AsyncData(updatedAnimes);
     } catch (e) {
-      state = AsyncError(e.toString(), StackTrace.current);
+      state = state.copyWith(
+        isRemoving: false,
+        errorMessage: e.toString(),
+      );
     }
   }
 }
 
-final favoriteAnimesProvider =
-    AsyncNotifierProvider.autoDispose<FavoriteAnimesNotifier, List<Movie>>(
-  () {
-    return FavoriteAnimesNotifier(
+final favoriteAnimesProvider = StateNotifierProvider.autoDispose<
+    FavoriteAnimesNotifier, FavoriteAnimesState>(
+  (ref) {
+    final notifier = FavoriteAnimesNotifier(
       animesRepo: getIt.get<AnimesRepository>(),
     );
+    notifier.init(); // Trigger the initial fetch
+    return notifier;
   },
 );

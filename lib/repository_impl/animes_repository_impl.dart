@@ -122,7 +122,7 @@ class AnimesRepositoryImpl implements AnimesRepository {
       final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
 
       if (apiResponse.statusCode == 200) {
-        final data = apiResponse.data['data'];
+        final data = apiResponse.data;
         final anime = Movie.fromJson(data);
 
         return anime;
