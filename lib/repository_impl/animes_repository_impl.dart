@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:anime_world/models/anime_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -88,6 +89,47 @@ class AnimesRepositoryImpl implements AnimesRepository {
     }
   }
 
+  //! Method to fetch animes by a search query
+  @override
+  Future<PaginationData<Anime>> fetchAnimesBySearch({
+    required String query,
+    required int pageNum,
+  }) async {
+    try {
+      final baseUrl = "https://api.myanimelist.net/v2/anime?q=$query&limit=10";
+      final clientId = dotenv.env['CLIENT_ID'] ?? '';
+
+      final response = await http.get(
+        Uri.parse(baseUrl),
+        // .replace(queryParameters: {
+        //   'limit': 12,
+        //   'offset': pageNum,
+        // }),
+        headers: {'X-MAL-CLIENT-ID': clientId},
+      );
+
+      if (response.statusCode == 200) {
+        // Successful response
+        final Map<String, dynamic> data = json.decode(response.body);
+        AnimeInfo animeInfo = AnimeInfo.fromJson(data);
+        List<Anime> animes = animeInfo.animes.toList();
+
+        final PaginationData<Anime> animeData =
+            PaginationData(data: animes, fromJson: Anime.fromJson);
+
+        return animeData;
+      } else {
+        // Error handling
+        debugPrint("Error: ${response.statusCode}");
+        debugPrint("Body: ${response.body}");
+        throw Exception("Failed to get data!");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //! Method to fetch only favorite animes
   @override
   Future<PaginationData<Movie>> fetchFavoriteAnimes(int pageNum) async {
     try {
@@ -112,6 +154,7 @@ class AnimesRepositoryImpl implements AnimesRepository {
     }
   }
 
+  //! Method to add an anime as favorite
   @override
   Future<Movie> createFavoriteAnime({required Movie movie}) async {
     try {
@@ -134,6 +177,7 @@ class AnimesRepositoryImpl implements AnimesRepository {
     }
   }
 
+  //! Method to delete an anime from favorites
   @override
   Future<void> deleteFavoriteAnime({required int id}) async {
     try {

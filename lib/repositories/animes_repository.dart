@@ -13,6 +13,12 @@ abstract class AnimesRepository {
   /// Fetches a single anime by its id
   Future<AnimeDetails> fetchAnimeById(int id);
 
+  /// Fetch animes by a search query
+  Future<PaginationData<Anime>> fetchAnimesBySearch({
+    required String query,
+    required int pageNum,
+  });
+
   //! Methods to work with favorite animes
   Future<PaginationData<Movie>> fetchFavoriteAnimes(int pageNum);
   Future<Movie> createFavoriteAnime({required Movie movie});

@@ -23,12 +23,12 @@ final getAnimeByRankingProvider = FutureProvider.autoDispose
 });
 
 //! Animes By Query
-final getAnimeBySearchProvider =
-    FutureProvider.autoDispose.family<Iterable<Anime>, String>(
-  (ref, query) {
-    return getAnimesbySearchApi(query: query);
-  },
-);
+// final getAnimeBySearchProvider =
+//     FutureProvider.autoDispose.family<Iterable<Anime>, String>(
+//   (ref, query) {
+//     return getAnimesbySearchApi(query: query);
+//   },
+// );
 
 //! Anime Details
 final animeDetailsProvider =

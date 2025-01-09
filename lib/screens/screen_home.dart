@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '/screens/animes_screen.dart';
 import '/screens/categories_screen.dart';
-import '/screens/search_screen.dart';
+import 'screen_search.dart';
 import 'settings/screen_settings.dart';
 
 class ScreenHome extends StatefulWidget {
@@ -30,7 +30,7 @@ class _ScreenHomeState extends State<ScreenHome> {
 
   final _screens = const [
     AnimesScreen(),
-    SearchScreen(),
+    ScreenSearch(),
     CategoriesScreen(),
     ScreenSettings(),
   ];

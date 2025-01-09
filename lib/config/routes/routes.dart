@@ -1,3 +1,4 @@
+import 'package:anime_world/screens/animes/screen_search_animes.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -109,6 +110,12 @@ class AppRouter {
       GoRoute(
         path: ScreenFavoriteAnimes.routeName,
         builder: (context, state) => const ScreenFavoriteAnimes(),
+      ),
+
+      //! Screen Search Animes
+      GoRoute(
+        path: ScreenSearchAnimes.routeName,
+        builder: (context, state) => const ScreenSearchAnimes(),
       ),
     ],
   );
