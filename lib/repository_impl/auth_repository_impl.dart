@@ -1,3 +1,4 @@
+import 'package:anime_world/constants/endpoints.dart';
 import 'package:dio/dio.dart';
 
 import '/common/models/api_response.dart';
@@ -76,6 +77,47 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  //! Logout method
+  @override
+  Future<bool> logout() async {
+    try {
+      final response = await _dio.post('auth/logout', {});
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        AppConfig().resetLoginInfo();
+      }
+
+      return true;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  //! Change Password method
+  @override
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await _dio.post(Endpoints.changePassword, {
+        'old_password': oldPassword,
+        'new_password': newPassword,
+      });
+
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('Failed to change password');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   //! Save current user local
   @override
   Future<User?> getCurrentUserLocal() async {
@@ -90,22 +132,6 @@ class AuthRepositoryImpl implements AuthRepository {
         return user;
       }
       return null;
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  @override
-  Future<bool> logout() async {
-    try {
-      final response = await _dio.post('auth/logout', {});
-      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
-
-      if (apiResponse.statusCode == 200) {
-        AppConfig().resetLoginInfo();
-      }
-
-      return true;
     } catch (e) {
       rethrow;
     }

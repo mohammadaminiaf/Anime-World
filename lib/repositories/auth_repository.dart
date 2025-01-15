@@ -20,6 +20,12 @@ abstract class AuthRepository {
   //! Method to log the user out
   Future<bool> logout();
 
+  //! Method to change user's password
+  Future<bool> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  });
+
   //! Method to get current user locally
   Future<User?> getCurrentUserLocal();
 

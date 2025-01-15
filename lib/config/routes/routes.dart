@@ -1,4 +1,5 @@
 import 'package:anime_world/screens/animes/screen_search_animes.dart';
+import 'package:anime_world/screens/settings/screen_change_password.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -116,6 +117,12 @@ class AppRouter {
       GoRoute(
         path: ScreenSearchAnimes.routeName,
         builder: (context, state) => const ScreenSearchAnimes(),
+      ),
+
+      //! Screen Change Password
+      GoRoute(
+        path: ScreenChangePassword.routeName,
+        builder: (context, state) => const ScreenChangePassword(),
       ),
     ],
   );

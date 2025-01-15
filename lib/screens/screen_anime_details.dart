@@ -1,29 +1,28 @@
-import 'package:anime_world/common/buttons/flat_button.dart';
-import 'package:anime_world/common/utils/utils.dart';
-import 'package:anime_world/models/anime_node.dart';
-import 'package:anime_world/models/movies/movie.dart';
-import 'package:anime_world/notifiers/favorite_animes_notifier.dart';
-import 'package:anime_world/notifiers/favorite_animes_state.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '/common/buttons/flat_button.dart';
 import '/common/extensions/extensions.dart';
 import '/common/screens/screen_full_images_view.dart';
 import '/common/styles/paddings.dart';
 import '/common/styles/text_styles.dart';
+import '/common/utils/utils.dart';
 import '/common/widgets/ios_back_button.dart';
-import '../common/widgets/screen_image_view.dart';
 import '/common/widgets/read_more_text.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
 import '/cubits/anime_title_language_cubit.dart';
 import '/models/anime_details.dart';
+import '/models/movies/movie.dart';
 import '/models/picture.dart';
+import '/notifiers/favorite_animes_notifier.dart';
+import '/notifiers/favorite_animes_state.dart';
 import '/providers/anime_providers.dart';
 import '/views/anime_horizontal_list_view.dart';
+import '../common/widgets/screen_image_view.dart';
 
 class ScreenAnimeDetails extends ConsumerWidget {
   static const routeName = '/screen-anime-details';

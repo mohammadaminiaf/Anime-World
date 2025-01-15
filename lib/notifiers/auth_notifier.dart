@@ -63,12 +63,36 @@ class AuthNotifier extends AutoDisposeAsyncNotifier<User?> {
   //! Logout method
   Future<void> logout() async {
     try {
+      state = const AsyncLoading();
+
       final response = await authRepo.logout();
       if (response == true) {
         await AppConfig().resetLoginInfo();
       }
+
+      state = const AsyncData(null);
     } catch (e) {
-      rethrow;
+      state = AsyncError(e.toString(), StackTrace.current);
+    }
+  }
+
+  //! Change password
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    try {
+      state = const AsyncLoading();
+
+      await authRepo.changePassword(
+        oldPassword: oldPassword,
+        newPassword: newPassword,
+      );
+
+      final user = state.value;
+      state = AsyncData(user);
+    } catch (e) {
+      state = AsyncError(e.toString(), StackTrace.current);
     }
   }
 

@@ -78,6 +78,18 @@ class AnimesRepositoryImpl implements AnimesRepository {
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = jsonDecode(response.body);
         final animeDetails = AnimeDetails.fromJson(data);
+
+        // If animes details was opened successfully, add movie to viewed movies
+        final movie = Movie(
+          id: animeDetails.id,
+          title: animeDetails.title,
+          englishTitle: animeDetails.alternativeTitles.en,
+          imageUrl: animeDetails.mainPicture.medium,
+          genres: animeDetails.genres.map((genre) => genre.name).toList(),
+          rating: animeDetails.mean,
+        );
+        await createViewedMovie(movie: movie);
+
         return animeDetails;
       } else {
         debugPrint('Code: ${response.statusCode}');
@@ -190,5 +202,12 @@ class AnimesRepositoryImpl implements AnimesRepository {
     } catch (e) {
       rethrow;
     }
+  }
+
+  @override
+  Future<void> createViewedMovie({
+    required Movie movie,
+  }) async {
+    await dioService.post('movies/viewed', movie.toJson());
   }
 }

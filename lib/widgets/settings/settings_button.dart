@@ -12,12 +12,14 @@ class SettingsButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return ListTile(
       contentPadding: EdgeInsets.zero,
       onTap: onPressed,
       title: Text(
         title,
-        style: const TextStyle(color: Colors.white),
+        style: theme.textTheme.bodyMedium,
       ),
       trailing: const Icon(
         Icons.arrow_forward_ios,

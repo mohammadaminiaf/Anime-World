@@ -33,6 +33,11 @@ class DioClient {
         } else if (statusCode == 500) {
           return "Internal server error. Please try again later.";
         }
+        final detail = exception.response?.data['detail'];
+        if (detail != null) {
+          return detail;
+        }
+
         return "Received invalid status code: $statusCode.";
       case DioExceptionType.cancel:
         return "Request was cancelled. Please try again.";

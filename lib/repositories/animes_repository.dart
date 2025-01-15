@@ -23,4 +23,7 @@ abstract class AnimesRepository {
   Future<PaginationData<Movie>> fetchFavoriteAnimes(int pageNum);
   Future<Movie> createFavoriteAnime({required Movie movie});
   Future<void> deleteFavoriteAnime({required int id});
+
+  //! Viewed animes
+  Future<void> createViewedMovie({required Movie movie});
 }

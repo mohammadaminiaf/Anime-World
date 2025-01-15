@@ -1,6 +1,3 @@
-import 'package:anime_world/screens/animes/screen_favorite_animes.dart';
-import 'package:anime_world/screens/auth/screen_register.dart';
-import 'package:anime_world/screens/settings/screen_update_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,7 +10,11 @@ import '/cubits/anime_title_language_cubit.dart';
 import '/cubits/theme_cubit.dart';
 import '/models/auth/user.dart';
 import '/notifiers/auth_notifier.dart';
+import '/screens/animes/screen_favorite_animes.dart';
 import '/screens/auth/screen_login.dart';
+import '/screens/auth/screen_register.dart';
+import '/screens/settings/screen_change_password.dart';
+import '/screens/settings/screen_update_profile.dart';
 import '/widgets/settings/settings_button.dart';
 import '/widgets/settings/settings_switch.dart';
 
@@ -72,26 +73,11 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
                 onPressed: () => context.push(ScreenRegister.routeName),
               ),
             ],
-            if (user != null) ...[
-              SettingsButton(
-                title: 'Favorite Animes',
-                onPressed: () => context.push(
-                  ScreenFavoriteAnimes.routeName,
-                  extra: user,
-                ),
+            if (user != null)
+              _buildLoggedInOptions(
+                context: context,
+                user: user,
               ),
-              SettingsButton(
-                title: 'Update Profile',
-                onPressed: () => context.push(
-                  ScreenUpdateProfile.routeName,
-                  extra: user,
-                ),
-              ),
-              SettingsButton(
-                title: 'Logout',
-                onPressed: () => _logout(context, ref),
-              ),
-            ]
           ],
         ),
       ),
@@ -112,6 +98,45 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
           ),
         ),
       );
+
+  Widget _buildLoggedInOptions({
+    required User user,
+    required BuildContext context,
+  }) {
+    return Column(
+      children: [
+        SettingsButton(
+          title: 'Favorite Animes',
+          onPressed: () => context.push(
+            ScreenFavoriteAnimes.routeName,
+            extra: user,
+          ),
+        ),
+        SettingsButton(
+          title: 'Update Profile',
+          onPressed: () => context.push(
+            ScreenUpdateProfile.routeName,
+            extra: user,
+          ),
+        ),
+        SettingsButton(
+          title: 'Change Password',
+          onPressed: () => context.push(
+            ScreenChangePassword.routeName,
+            extra: user,
+          ),
+        ),
+        Consumer(
+          builder: (context, ref, child) {
+            return SettingsButton(
+              title: 'Logout',
+              onPressed: () => _logout(context, ref),
+            );
+          },
+        ),
+      ],
+    );
+  }
 }
 
 class AppThemeSwitch extends StatelessWidget {

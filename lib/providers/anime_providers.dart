@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/api/get_anime_by_ranking_type_api.dart';
-import '/api/get_anime_by_search_api.dart';
 import '/api/get_seasonal_animes_api.dart';
 import '/locator.dart';
 import '/models/anime.dart';
@@ -21,14 +20,6 @@ final getAnimeByRankingProvider = FutureProvider.autoDispose
     limit: 500,
   );
 });
-
-//! Animes By Query
-// final getAnimeBySearchProvider =
-//     FutureProvider.autoDispose.family<Iterable<Anime>, String>(
-//   (ref, query) {
-//     return getAnimesbySearchApi(query: query);
-//   },
-// );
 
 //! Anime Details
 final animeDetailsProvider =
