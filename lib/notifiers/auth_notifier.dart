@@ -171,6 +171,19 @@ class AuthNotifier extends AutoDisposeAsyncNotifier<User?> {
       state = AsyncError(e.toString(), StackTrace.current);
     }
   }
+
+  Future<void> deleteUser({required String userId}) async {
+    try {
+      state = const AsyncLoading();
+
+      await authRepo.deleteUser(userId);
+
+      await AppConfig().resetLoginInfo();
+      state = const AsyncData(null);
+    } catch (e) {
+      state = AsyncError(e.toString(), StackTrace.current);
+    }
+  }
 }
 
 final authProvider = AsyncNotifierProvider.autoDispose<AuthNotifier, User?>(

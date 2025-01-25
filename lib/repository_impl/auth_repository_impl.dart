@@ -258,4 +258,21 @@ class AuthRepositoryImpl implements AuthRepository {
       rethrow;
     }
   }
+
+  @override
+  Future<bool> deleteUser(String userId) async {
+    try {
+      final response = await _dio.delete('${Endpoints.user}/$userId', {});
+
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('Server error, could not delete user');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

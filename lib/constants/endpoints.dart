@@ -9,6 +9,9 @@ class Endpoints {
   static const String verifyOtp = 'auth/verify-otp';
   static const String resetPassword = 'auth/reset-password';
 
+  //! Endpoints for users
+  static const String user = 'auth/user';
+
   //! Add base url for image paths
   static String getImage(String imageUrl) {
     if (imageUrl.contains(baseUrl)) {

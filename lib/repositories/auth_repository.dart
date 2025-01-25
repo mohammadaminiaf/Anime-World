@@ -50,4 +50,7 @@ abstract class AuthRepository {
 
   //! Update user local
   Future<void> updateUserLocal({required User? user});
+
+  //! Delete user account
+  Future<bool> deleteUser(String userId);
 }

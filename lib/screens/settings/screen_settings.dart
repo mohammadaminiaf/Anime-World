@@ -14,6 +14,7 @@ import '/screens/animes/screen_favorite_animes.dart';
 import '/screens/auth/screen_login.dart';
 import '/screens/auth/screen_register.dart';
 import '/screens/settings/screen_change_password.dart';
+import '/screens/settings/screen_delete_account.dart';
 import '/screens/settings/screen_update_profile.dart';
 import '/widgets/settings/settings_button.dart';
 import '/widgets/settings/settings_switch.dart';
@@ -129,6 +130,13 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
           title: 'Change Password',
           onPressed: () => context.push(
             ScreenChangePassword.routeName,
+            extra: user,
+          ),
+        ),
+        SettingsButton(
+          title: 'Delete Account',
+          onPressed: () => context.push(
+            ScreenDeleteAccount.routeName,
             extra: user,
           ),
         ),

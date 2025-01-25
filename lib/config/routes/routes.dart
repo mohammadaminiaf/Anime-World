@@ -1,5 +1,3 @@
-import 'package:anime_world/screens/auth/screen_reset_password.dart';
-import 'package:anime_world/screens/auth/screen_verify_otp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -9,15 +7,18 @@ import '/models/anime_category.dart';
 import '/models/auth/user.dart';
 import '/screens/animes/screen_favorite_animes.dart';
 import '/screens/animes/screen_search_animes.dart';
-import '../../screens/auth/screen_forgot_pasword.dart';
 import '/screens/auth/screen_login.dart';
 import '/screens/auth/screen_register.dart';
+import '/screens/auth/screen_reset_password.dart';
+import '/screens/auth/screen_verify_otp.dart';
 import '/screens/category_animes_screen.dart';
 import '/screens/settings/screen_change_password.dart';
+import '/screens/settings/screen_delete_account.dart';
 import '/screens/settings/screen_update_profile.dart';
 import '/screens/view_all_animes_screen.dart';
 import '/screens/view_all_seasonal_animes_screen.dart';
 import '../../common/widgets/screen_image_view.dart';
+import '../../screens/auth/screen_forgot_pasword.dart';
 import '../../screens/screen_anime_details.dart';
 import '../../screens/screen_home.dart';
 
@@ -158,6 +159,14 @@ class AppRouter {
             email: email,
             otp: otp,
           );
+        },
+      ),
+
+      //! Screen Delete Account
+      GoRoute(
+        path: ScreenDeleteAccount.routeName,
+        builder: (context, state) {
+          return const ScreenDeleteAccount();
         },
       ),
     ],
