@@ -100,11 +100,8 @@ class _EmailTextFieldState extends State<EmailTextField> {
             initialValue: widget.defaultValue,
             readOnly: widget.readonly ?? false,
             onTap: widget.onTap,
-            // validator: widget.validator ?? Validators.validateEmail,
-            style: widget.style ??
-                theme.textTheme.bodyLarge?.copyWith(
-                  color: Colors.black87,
-                ),
+            validator: widget.validator ?? Validators.validateEmail,
+            style: widget.style ?? theme.textTheme.bodyLarge,
             focusNode: widget.focusNode,
             autofocus: widget.autoFocus ?? false,
             onChanged: (value) {
@@ -121,7 +118,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
             decoration: InputDecoration(
               hintText: widget.hintText,
               hintStyle: TextStyle(
-                color: widget.hintColor ?? Colors.grey.shade600,
+                color: widget.hintColor,
                 fontSize: 14,
               ),
               helperText: widget.helperText,
@@ -133,7 +130,7 @@ class _EmailTextFieldState extends State<EmailTextField> {
                       : verifyButton
                   : null,
               filled: true,
-              fillColor: widget.fillColor ?? Colors.grey.shade100,
+              fillColor: widget.fillColor ?? Colors.transparent,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12.0),
                 borderSide: BorderSide.none,

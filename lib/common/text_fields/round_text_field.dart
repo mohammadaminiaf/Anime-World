@@ -70,10 +70,7 @@ class RoundTextField extends StatelessWidget {
         readOnly: readonly ?? false,
         onTap: onTap,
         validator: validator,
-        style: style ??
-            theme.textTheme.bodyLarge?.copyWith(
-              color: Colors.black87,
-            ),
+        style: style ?? theme.textTheme.bodyLarge,
         focusNode: focusNode,
         autofocus: autoFocus ?? false,
         onChanged: onChanged,
@@ -83,7 +80,7 @@ class RoundTextField extends StatelessWidget {
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(
-            color: hintColor ?? Colors.grey.shade600,
+            color: hintColor,
             fontSize: 14,
           ),
           helperText: helperText,
@@ -91,7 +88,7 @@ class RoundTextField extends StatelessWidget {
           prefixIcon: prefix,
           suffixIcon: suffix,
           filled: true,
-          fillColor: fillColor ?? Colors.grey.shade100,
+          fillColor: fillColor ?? Colors.transparent,
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12.0),
             borderSide: BorderSide.none,

@@ -26,6 +26,22 @@ abstract class AuthRepository {
     required String newPassword,
   });
 
+  //! Send OTP method
+  Future<bool> sendOtp({required String email});
+
+  //! Verify OTP
+  Future<bool> verifyOtp({
+    required String otp,
+    required String email,
+  });
+
+  //! Reset password
+  Future<bool> resetPassword({
+    required String otp,
+    required String email,
+    required String newPassword,
+  });
+
   //! Method to get current user locally
   Future<User?> getCurrentUserLocal();
 

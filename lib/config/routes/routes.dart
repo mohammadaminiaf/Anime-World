@@ -1,5 +1,5 @@
-import 'package:anime_world/screens/animes/screen_search_animes.dart';
-import 'package:anime_world/screens/settings/screen_change_password.dart';
+import 'package:anime_world/screens/auth/screen_reset_password.dart';
+import 'package:anime_world/screens/auth/screen_verify_otp.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
@@ -8,9 +8,12 @@ import '/core/screens/error_screen.dart';
 import '/models/anime_category.dart';
 import '/models/auth/user.dart';
 import '/screens/animes/screen_favorite_animes.dart';
+import '/screens/animes/screen_search_animes.dart';
+import '../../screens/auth/screen_forgot_pasword.dart';
 import '/screens/auth/screen_login.dart';
 import '/screens/auth/screen_register.dart';
 import '/screens/category_animes_screen.dart';
+import '/screens/settings/screen_change_password.dart';
 import '/screens/settings/screen_update_profile.dart';
 import '/screens/view_all_animes_screen.dart';
 import '/screens/view_all_seasonal_animes_screen.dart';
@@ -123,6 +126,39 @@ class AppRouter {
       GoRoute(
         path: ScreenChangePassword.routeName,
         builder: (context, state) => const ScreenChangePassword(),
+      ),
+
+      //! Screen Forgot Password
+      GoRoute(
+        path: ScreenForgotPassword.routeName,
+        builder: (context, state) => const ScreenForgotPassword(),
+      ),
+
+      //! Screen Verify OTP
+      GoRoute(
+        path: ScreenVerifyOtp.routeName,
+        builder: (context, state) {
+          final email = state.extra as String? ?? '';
+
+          return ScreenVerifyOtp(
+            email: email,
+          );
+        },
+      ),
+
+      //! Screen Reset Password
+      GoRoute(
+        path: ScreenResetPassword.routeName,
+        builder: (context, state) {
+          final extra = state.extra as Map<String, dynamic>? ?? {};
+          final email = extra['email'] as String? ?? '';
+          final otp = extra['otp'] as String? ?? '';
+
+          return ScreenResetPassword(
+            email: email,
+            otp: otp,
+          );
+        },
       ),
     ],
   );

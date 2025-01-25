@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
+  //! Dark Theme
   static final darkTheme = ThemeData(
     scaffoldBackgroundColor: Colors.blueGrey.shade900,
     primaryColor: Colors.white,
@@ -29,6 +30,7 @@ class AppTheme {
     ),
   );
 
+  //! Light Theme
   static final lightTheme = ThemeData(
     // scaffoldBackgroundColor: lightThemeWhiteBackground,
     primaryColor: Colors.black,
@@ -39,7 +41,6 @@ class AppTheme {
     ),
     textTheme: const TextTheme(
       bodyLarge: TextStyle(
-        backgroundColor: Colors.white,
         color: Colors.black,
       ),
     ),

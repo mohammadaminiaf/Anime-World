@@ -38,49 +38,55 @@ class ScreenSettings extends ConsumerWidget with DialogMixin {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     // Watch the user state, but don't handle loading or error states here
-    final user = ref.watch(authProvider).value;
+    final user = ref.watch(authProvider);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Settings'),
-      ),
-      body: Padding(
-        padding: Paddings.horizontalPadding,
-        child: Column(
-          children: [
-            // Show user info if logged in, otherwise show spacing
-            // if (user != null) _buildProfileInfo(user: user),
-            if (user == null) const SizedBox(height: 10),
+    return user.when(
+      data: (user) {
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Settings'),
+          ),
+          body: Padding(
+            padding: Paddings.horizontalPadding,
+            child: Column(
+              children: [
+                // Show user info if logged in, otherwise show spacing
+                // if (user != null) _buildProfileInfo(user: user),
+                if (user == null) const SizedBox(height: 10),
 
-            // Dark Mode Switch
-            const AppThemeSwitch(),
+                // Dark Mode Switch
+                const AppThemeSwitch(),
 
-            const SizedBox(height: 10),
+                const SizedBox(height: 10),
 
-            // Anime Title Language Switch
-            const AnimeTitleLanguageSwitch(),
+                // Anime Title Language Switch
+                const AnimeTitleLanguageSwitch(),
 
-            const SizedBox(height: 10),
+                const SizedBox(height: 10),
 
-            // Login or Logout Button
-            if (user == null) ...[
-              SettingsButton(
-                title: 'Login',
-                onPressed: () => context.push(ScreenLogin.routeName),
-              ),
-              SettingsButton(
-                title: 'Register',
-                onPressed: () => context.push(ScreenRegister.routeName),
-              ),
-            ],
-            if (user != null)
-              _buildLoggedInOptions(
-                context: context,
-                user: user,
-              ),
-          ],
-        ),
-      ),
+                // Login or Logout Button
+                if (user == null) ...[
+                  SettingsButton(
+                    title: 'Login',
+                    onPressed: () => context.push(ScreenLogin.routeName),
+                  ),
+                  SettingsButton(
+                    title: 'Register',
+                    onPressed: () => context.push(ScreenRegister.routeName),
+                  ),
+                ],
+                if (user != null)
+                  _buildLoggedInOptions(
+                    context: context,
+                    user: user,
+                  ),
+              ],
+            ),
+          ),
+        );
+      },
+      error: (error, stackTrace) => Text('Error: $error'),
+      loading: () => const Center(child: CircularProgressIndicator()),
     );
   }
 

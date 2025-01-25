@@ -96,6 +96,56 @@ class AuthNotifier extends AutoDisposeAsyncNotifier<User?> {
     }
   }
 
+  //! Send OTP
+  Future<void> sendOtp({required String email}) async {
+    try {
+      state = const AsyncLoading();
+
+      await authRepo.sendOtp(email: email);
+
+      final user = state.value;
+      state = AsyncData(user);
+    } catch (e) {
+      state = AsyncError(e.toString(), StackTrace.current);
+    }
+  }
+
+  //! Verify OTP
+  Future<void> verifyOTP({required String email, required String otp}) async {
+    try {
+      state = const AsyncLoading();
+
+      await authRepo.verifyOtp(email: email, otp: otp);
+
+      final user = state.value;
+      state = AsyncData(user);
+    } catch (e) {
+      state = AsyncError(e.toString(), StackTrace.current);
+    }
+  }
+
+  //! Verify OTP
+  Future<void> resetPassword({
+    required String email,
+    required String otp,
+    required String newPassword,
+  }) async {
+    try {
+      state = const AsyncLoading();
+
+      await authRepo.resetPassword(
+        email: email,
+        otp: otp,
+        newPassword: newPassword,
+      );
+
+      final user = state.value;
+      state = AsyncData(user);
+    } catch (e) {
+      state = AsyncError(e.toString(), StackTrace.current);
+    }
+  }
+
   //! GET CURRENT USER LOCALLY
   Future<User?> getCurrentUserLocal() async {
     try {

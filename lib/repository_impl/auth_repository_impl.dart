@@ -190,4 +190,72 @@ class AuthRepositoryImpl implements AuthRepository {
     // TODO: implement updateUserLocal
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool> resetPassword({
+    required String otp,
+    required String email,
+    required String newPassword,
+  }) async {
+    try {
+      final response = await _dio.post(
+        Endpoints.resetPassword,
+        FormData.fromMap({
+          'email': email,
+          'otp': otp,
+          'new_password': newPassword,
+        }),
+      );
+
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('Server error, could not reset password');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> sendOtp({required String email}) async {
+    try {
+      final response = await _dio.post(
+        Endpoints.sendOtp,
+        FormData.fromMap({'email': email}),
+      );
+
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('Server error! Could not send OTP to user');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> verifyOtp({required String otp, required String email}) async {
+    try {
+      final response = await _dio.post(
+        Endpoints.verifyOtp,
+        FormData.fromMap({'email': email, 'otp': otp}),
+      );
+
+      final ApiResponse apiResponse = ApiResponse.fromJson(response.data);
+
+      if (apiResponse.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('Could not verify OTP from server');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

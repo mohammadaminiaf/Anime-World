@@ -5,6 +5,9 @@ class Endpoints {
   static const String login = 'auth/login';
   static const String register = 'auth/register';
   static const String changePassword = 'auth/change-password';
+  static const String sendOtp = 'auth/send-otp';
+  static const String verifyOtp = 'auth/verify-otp';
+  static const String resetPassword = 'auth/reset-password';
 
   //! Add base url for image paths
   static String getImage(String imageUrl) {

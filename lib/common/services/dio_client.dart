@@ -22,17 +22,18 @@ class DioClient {
       case DioExceptionType.badResponse:
         // Handle non-200 responses
         final statusCode = exception.response?.statusCode;
-        if (statusCode == 400) {
-          return "Bad request. Please check your input.";
-        } else if (statusCode == 401) {
-          return "Unauthorized. Please log in again.";
-        } else if (statusCode == 403) {
-          return "Access denied. You do not have permission.";
-        } else if (statusCode == 404) {
-          return "Resource not found.";
-        } else if (statusCode == 500) {
-          return "Internal server error. Please try again later.";
-        }
+        // if (statusCode == 400) {
+        //   return "Bad request. Please check your input.";
+        // } else if (statusCode == 401) {
+        //   return "Unauthorized. Please log in again.";
+        // } else if (statusCode == 403) {
+        //   return "Access denied. You do not have permission.";
+        // } else if (statusCode == 404) {
+        //   return "Resource not found.";
+        // }
+        // else if (statusCode == 500) {
+        //   return "Internal server error. Please try again later.";
+        // }
         final detail = exception.response?.data['detail'];
         if (detail != null) {
           return detail;

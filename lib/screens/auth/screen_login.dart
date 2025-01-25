@@ -1,6 +1,4 @@
-import 'package:anime_world/common/utils/utils.dart';
-import 'package:anime_world/notifiers/auth_notifier.dart';
-import 'package:anime_world/screens/screen_home.dart';
+import 'package:anime_world/common/text_fields/round_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -11,17 +9,16 @@ import '/common/mixins/loading_overlay.dart';
 import '/common/styles/paddings.dart';
 import '/common/text_fields/email_text_field.dart';
 import '/common/text_fields/password_text_field.dart';
+import '/common/utils/utils.dart';
+import '/notifiers/auth_notifier.dart';
+import 'screen_forgot_pasword.dart';
+import '/screens/screen_home.dart';
 import 'screen_register.dart';
 
 class ScreenLogin extends ConsumerStatefulWidget {
-  const ScreenLogin({
-    super.key,
-    // required this.redirectedFrom,
-  });
+  const ScreenLogin({super.key});
 
-  // final String redirectedFrom;
-
-  static const routeName = '/login-screen';
+  static const routeName = '/screen-login';
 
   @override
   ConsumerState<ScreenLogin> createState() => _ScreenLoginState();
@@ -29,13 +26,12 @@ class ScreenLogin extends ConsumerStatefulWidget {
 
 class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
   final _loginFormKey = GlobalKey<FormState>();
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final ValueNotifier<bool> _showVerifyText = ValueNotifier(false);
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -43,18 +39,19 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
   Future<void> _login(BuildContext context) async {
     if (_loginFormKey.currentState?.validate() == true) {
       _loginFormKey.currentState?.save();
-      final email = _emailController.text.trim();
+      final username = _usernameController.text.trim();
       final password = _passwordController.text.trim();
 
-      if (email.isEmpty || password.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Email and password are necessary.')),
+      if (username.isEmpty || password.isEmpty) {
+        Utils.showSnackBar(
+          context: context,
+          text: 'Username and password are necessary.',
         );
         return;
       }
 
       ref.read(authProvider.notifier).login(
-            username: email.split('@').first,
+            username: username,
             password: password,
           );
     }
@@ -78,7 +75,9 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
             } else if (next is AsyncError) {
               // Login failed
               Utils.showSnackBar(
-                  context: context, text: 'Login failed: ${next.error}');
+                context: context,
+                text: 'Login failed: ${next.error}',
+              );
             }
           },
         );
@@ -106,12 +105,9 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Email
-                EmailTextField(
-                  controller: _emailController,
-                  hintText: 'Email',
-                  onVerify: () {
-                    _showVerifyText.value = true;
-                  },
+                RoundTextField(
+                  controller: _usernameController,
+                  hintText: 'Username',
                 ),
 
                 const SizedBox(height: 8),
@@ -124,7 +120,7 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
                 // Forget Password
                 CustomTextButton.endPadding(
                   onPressed: () {
-                    // context.push(ScreenVerifyEmail.route);
+                    context.push(ScreenForgotPassword.routeName);
                   },
                   label: 'Forgot Password?',
                 ),
@@ -134,17 +130,6 @@ class _ScreenLoginState extends ConsumerState<ScreenLogin> with LoadingOverlay {
                 const SizedBox(height: 24),
                 _buildDontHaveAccount(),
                 const SizedBox(height: 24),
-                // SocialLoginButton(
-                //   iconUrl: 'assets/icons/google_logo.png',
-                //   text: 'ورود با گوگل',
-                //   onPressed: _loginWithGoogle,
-                // ),
-                // const SizedBox(height: 24),
-                // SocialLoginButton(
-                //   text: 'ورود با فیسبوک',
-                //   iconUrl: 'assets/icons/facebook_logo.png',
-                //   onPressed: () {},
-                // ),
               ],
             ),
           ),
