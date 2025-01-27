@@ -1,46 +1,115 @@
 import 'dart:async';
 
-import 'package:anime_world/locator.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '/common/models/pagination.dart';
+import '/locator.dart';
 import '/models/anime.dart';
+import '/models/enums/data_status.dart';
 import '/repositories/animes_repository.dart';
 
-class AnimesNotifier extends AutoDisposeAsyncNotifier<Iterable<Anime>> {
-  final AnimesRepository animesRepo;
+class AnimesState extends Equatable {
+  final String? error;
+  final Iterable<Anime>? animes;
+  final DataStatus? status;
 
-  AnimesNotifier({required this.animesRepo});
+  const AnimesState({
+    this.error,
+    this.animes,
+    this.status,
+  });
+
+  AnimesState copyWith({
+    String? error,
+    Iterable<Anime>? animes,
+    DataStatus? status,
+  }) {
+    return AnimesState(
+      error: error ?? this.error,
+      animes: animes ?? this.animes,
+      status: status ?? this.status,
+    );
+  }
 
   @override
-  FutureOr<List<Anime>> build() {
-    return [];
-  }
+  List<Object?> get props => [error, animes, status];
+}
+
+class AnimesNotifier extends StateNotifier<AnimesState> {
+  final AnimesRepository animesRepo;
+
+  AnimesNotifier({
+    required this.animesRepo,
+  }) : super(const AnimesState());
+
+  final Pagination pagination = Pagination();
 
   //! Fetch all animes list
   Future<void> fetchAllAnimes({
     required String rankingType,
-    required int limit,
   }) async {
     try {
-      state = const AsyncLoading();
+      state = state.copyWith(status: DataStatus.loading);
 
       final allAnimes = await animesRepo.fetchAnimesByRanking(
         rankingType: rankingType,
-        limit: limit,
+        nextPageUrl: null,
       );
 
-      if (allAnimes.isNotEmpty) {
-        state = AsyncData(allAnimes);
+      if (allAnimes.data.isNotEmpty) {
+        pagination.nextPageUrl = allAnimes.nextPageUrl;
+
+        state = state.copyWith(
+          animes: allAnimes.data,
+          status: DataStatus.loaded,
+        );
       } else {
-        state = AsyncError('No data found', StackTrace.current);
+        state = state.copyWith(error: 'No data found');
       }
     } catch (e) {
-      state = AsyncError(e.toString(), StackTrace.current);
+      state = state.copyWith(error: e.toString());
     }
+  }
+
+  //! Fetch more animes
+  Future<void> fetchMoreAnimes({
+    required String rankingType,
+  }) async {
+    // Avoid triggering multiple simultaneous calls
+    if (state.status == DataStatus.loadingMore ||
+        pagination.nextPageUrl == null) {
+      return;
+    }
+
+    //! Set loading more
+    state = state.copyWith(status: DataStatus.loadingMore);
+
+    try {
+      final moreAnimes = await animesRepo.fetchAnimesByRanking(
+        rankingType: rankingType,
+        nextPageUrl: pagination.nextPageUrl,
+      );
+
+      pagination.nextPageUrl = moreAnimes.nextPageUrl;
+
+      if (moreAnimes.data.isNotEmpty) {
+        final allAnimes = state.animes ?? [];
+        final updatedAnimes = [...allAnimes, ...moreAnimes.data];
+        state = state.copyWith(
+          animes: updatedAnimes,
+          status: DataStatus.loaded,
+        );
+      }
+    } catch (e) {
+      state = state.copyWith(error: e.toString());
+    } finally {}
   }
 }
 
 final animesProvider =
-    AsyncNotifierProvider.autoDispose<AnimesNotifier, Iterable<Anime>>(
-  () => AnimesNotifier(animesRepo: getIt.get<AnimesRepository>()),
+    StateNotifierProvider.autoDispose<AnimesNotifier, AnimesState>(
+  (ref) => AnimesNotifier(
+    animesRepo: getIt.get<AnimesRepository>(),
+  ),
 );

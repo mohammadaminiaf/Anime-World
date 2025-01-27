@@ -51,7 +51,7 @@ class AnimeGridTile extends StatelessWidget {
       child: Material(
         elevation: 5,
         child: CachedNetworkImage(
-          imageUrl: anime.node.mainPicture.medium,
+          imageUrl: anime.node.mainPicture?.medium ?? '',
           fit: BoxFit.fitWidth,
         ),
       ),

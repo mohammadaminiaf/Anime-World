@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:anime_world/models/anime_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -8,53 +7,51 @@ import 'package:http/http.dart' as http;
 import '/common/models/api_response.dart';
 import '/common/models/pagination_data.dart';
 import '/common/services/dio_client.dart';
+import '/common/services/mal_client.dart';
 import '/models/anime.dart';
 import '/models/anime_details.dart';
+import '/models/anime_info.dart';
 import '/models/movies/movie.dart';
 import '/repositories/animes_repository.dart';
 
 class AnimesRepositoryImpl implements AnimesRepository {
   final DioClient dioService;
-  AnimesRepositoryImpl({required this.dioService});
+  final MalClient malService;
+
+  AnimesRepositoryImpl({
+    required this.dioService,
+    required this.malService,
+  });
 
   //! Method to fetch all animes
   @override
-  Future<Iterable<Anime>> fetchAnimesByRanking({
+  Future<PaginationData<Anime>> fetchAnimesByRanking({
     required String rankingType,
-    required int limit,
+    required String? nextPageUrl,
   }) async {
-    final baseUrl =
-        'https://api.myanimelist.net/v2/anime/ranking?ranking_type=$rankingType&limit=$limit';
+    final baseUrl = nextPageUrl ??
+        'anime/ranking?ranking_type=$rankingType&limit=12&offset=0';
 
-    final clientId = dotenv.env['CLIENT_ID'] ?? '';
-
-    final response = await http.get(
-      Uri.parse(baseUrl),
-      headers: {
-        'X-MAL-CLIENT-ID': clientId,
-      },
-    );
+    final response = await malService.dio.get(baseUrl);
 
     if (response.statusCode == 200) {
-      final Map<String, dynamic> data = jsonDecode(response.body);
-      final List<dynamic> animeNodeList = data['data'];
-      final animes = animeNodeList
-          .where(
-        // Some animes miss main picture so it broke the list view
-        // and sometimes even the entire list, and sadly when I checked
-        // if the entire node was null, it passes.
-        (animeNode) => animeNode['node']['main_picture'] != null,
-      )
-          .map(
-        (node) {
-          return Anime.fromJson(node);
+      final List animesData = response.data['data'];
+      final animes = (animesData).map(
+        (animeData) {
+          return Anime.fromJson(animeData);
         },
+      ).toList();
+
+      final PaginationData<Anime> paginationData = PaginationData(
+        data: animes,
+        fromJson: Anime.fromJson,
+        nextPageUrl: response.data['paging']['next'],
       );
 
-      return animes;
+      return paginationData;
     } else {
       debugPrint("Error: ${response.statusCode}");
-      debugPrint("Body: ${response.body}");
+      debugPrint("Body: ${response.data}");
       throw Exception("Failed to get data!");
     }
   }

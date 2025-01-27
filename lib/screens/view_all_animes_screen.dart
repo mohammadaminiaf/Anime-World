@@ -1,3 +1,4 @@
+import 'package:anime_world/models/enums/data_status.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -29,7 +30,6 @@ class _ViewAllAnimesScreenState extends ConsumerState<ViewAllAnimesScreen> {
     Future.microtask(
       () => ref.read(animesProvider.notifier).fetchAllAnimes(
             rankingType: widget.rankingType,
-            limit: 500,
           ),
     );
     super.initState();
@@ -37,20 +37,29 @@ class _ViewAllAnimesScreenState extends ConsumerState<ViewAllAnimesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final allAnimes = ref.watch(animesProvider);
+    final state = ref.watch(animesProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.label),
       ),
-      body: allAnimes.when(
-        data: (animes) {
-          return RankedAnimesListView(animes: animes);
+      body: Consumer(
+        builder: (context, ref, child) {
+          if (state.status == DataStatus.loading) return const Loader();
+          if (state.status == DataStatus.error) {
+            return ErrorScreen(
+              error: state.error.toString(),
+            );
+          }
+
+          final animes = state.animes ?? [];
+
+          return RankedAnimesListView(
+            animes: animes,
+            rankingType: widget.rankingType,
+            isLoadingMore: state.status == DataStatus.loadingMore,
+          );
         },
-        error: (error, stackTrace) {
-          return ErrorScreen(error: error.toString());
-        },
-        loading: () => const Loader(),
       ),
     );
   }

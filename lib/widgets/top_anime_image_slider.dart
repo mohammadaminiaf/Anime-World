@@ -101,7 +101,7 @@ class TopAnimePicture extends StatelessWidget {
         child: AspectRatio(
           aspectRatio: 16 / 9,
           child: Image.network(
-            anime.node.mainPicture.medium,
+            anime.node.mainPicture?.medium ?? '',
             fit: BoxFit.cover,
           ),
         ),

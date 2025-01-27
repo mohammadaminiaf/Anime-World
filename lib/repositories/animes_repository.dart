@@ -5,9 +5,9 @@ import '/models/movies/movie.dart';
 
 abstract class AnimesRepository {
   /// Fetchesanimes by ranking type [all, airing, upcoming, tv, movie, ova, special, bypopularity, favorite]
-  Future<Iterable<Anime>> fetchAnimesByRanking({
+  Future<PaginationData<Anime>> fetchAnimesByRanking({
     required String rankingType,
-    required int limit,
+    required String? nextPageUrl,
   });
 
   /// Fetches a single anime by its id

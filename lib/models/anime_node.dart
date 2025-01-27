@@ -6,7 +6,7 @@ import 'picture.dart';
 class AnimeNode {
   final int id;
   final String title;
-  final Picture mainPicture;
+  final Picture? mainPicture;
 
   const AnimeNode({
     required this.id,
@@ -18,7 +18,9 @@ class AnimeNode {
     return AnimeNode(
       id: json['id'],
       title: json['title'],
-      mainPicture: Picture.fromJson(json['main_picture']),
+      mainPicture: json['main_picture'] != null
+          ? Picture.fromJson(json['main_picture'])
+          : null,
     );
   }
 }

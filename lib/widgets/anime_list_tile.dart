@@ -37,7 +37,7 @@ class AnimeListTile extends StatelessWidget {
                   height: 100,
                   width: 150,
                   child: CachedNetworkImage(
-                    imageUrl: anime.node.mainPicture.medium,
+                    imageUrl: anime.node.mainPicture?.medium ?? '',
                     fit: BoxFit.cover,
                   ),
                 ),

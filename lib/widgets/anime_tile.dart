@@ -31,7 +31,7 @@ class AnimeTile extends StatelessWidget {
             ClipRRect(
               borderRadius: BorderRadius.circular(8.0),
               child: CachedNetworkImage(
-                imageUrl: anime.mainPicture.medium,
+                imageUrl: anime.mainPicture?.medium ?? '',
                 fit: BoxFit.cover,
                 height: 200,
               ),

@@ -23,7 +23,7 @@ Future<String> getCategoryPictureApi({
   if (response.statusCode == 200) {
     final Map<String, dynamic> data = jsonDecode(response.body);
     final animes = AnimeInfo.fromJson(data);
-    final mainPicture = animes.animes.first.node.mainPicture.large;
+    final mainPicture = animes.animes.first.node.mainPicture?.large ?? '';
 
     return mainPicture;
   } else {

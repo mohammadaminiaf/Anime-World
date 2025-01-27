@@ -5,6 +5,7 @@ class PaginationData<T> {
   final int? perPage;
   final List<T> data;
   final T Function(Map<String, dynamic> json) fromJson;
+  final String? nextPageUrl;
 
   PaginationData({
     this.currentPage,
@@ -13,6 +14,7 @@ class PaginationData<T> {
     this.perPage,
     required this.data,
     required this.fromJson,
+    this.nextPageUrl,
   });
 
   factory PaginationData.fromJson(
@@ -26,6 +28,7 @@ class PaginationData<T> {
       perPage: json['page_size'],
       data: (json['data'] as List).map((item) => fromJsonT(item)).toList(),
       fromJson: fromJsonT,
+      // nextPageUrl: nextPageUrl,
     );
   }
 
