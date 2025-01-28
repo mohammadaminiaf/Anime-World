@@ -4,10 +4,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
 import '/models/anime_category.dart';
-import '/providers/fetch_animes_by_ranking_provider.dart';
+import '/notifiers/category_animes/category_animes_notifier.dart';
 import '/views/animes_grid_list.dart';
 
-class AnimeGridView extends ConsumerWidget {
+class AnimeGridView extends ConsumerStatefulWidget {
   const AnimeGridView({
     super.key,
     required this.category,
@@ -16,25 +16,51 @@ class AnimeGridView extends ConsumerWidget {
   final AnimeCategory category;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    // TODO: Create specific notifiers here to display data and also show pagination
+  ConsumerState<AnimeGridView> createState() => _AnimeGridViewState();
+}
 
-    final animeData = ref.watch(fetchAllRankingAnimesProvider(
-      RankingAnimeParams(
-        rankingType: category.rankingType,
-        limit: 500,
-      ),
-    ));
+class _AnimeGridViewState extends ConsumerState<AnimeGridView> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch initial data for the tab
+    Future.microtask(() {
+      ref
+          .read(categoryAnimesProvider.notifier)
+          .fetchAnimes(widget.category.rankingType);
+    });
+  }
 
-    return animeData.when(
-      data: (animes) {
-        return AnimesGridList(
-          title: category.title,
-          animes: animes,
-        );
+  @override
+  Widget build(BuildContext context) {
+    final state =
+        ref.watch(categoryAnimesProvider)[widget.category.rankingType] ??
+            CategoryAnimesState();
+
+    if (state.isLoading && state.animes.isEmpty) {
+      return const Loader();
+    }
+
+    if (state.error != null) {
+      return ErrorScreen(error: state.error!);
+    }
+
+    return NotificationListener<ScrollNotification>(
+      onNotification: (scrollInfo) {
+        if (scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
+            !state.isLoading &&
+            state.hasMore) {
+          // Load more data when reaching the end of the list
+          ref
+              .read(categoryAnimesProvider.notifier)
+              .fetchAnimes(widget.category.rankingType);
+        }
+        return false;
       },
-      error: (error, stackTrace) => ErrorScreen(error: error.toString()),
-      loading: () => const Loader(),
+      child: AnimesGridList(
+        title: widget.category.title,
+        animes: state.animes,
+      ),
     );
   }
 }
