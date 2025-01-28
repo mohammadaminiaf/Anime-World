@@ -1,12 +1,13 @@
+import 'package:anime_world/notifiers/animes_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '/api/get_anime_by_ranking_type_api.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
 import '/models/anime_category.dart';
 import '/views/animes_grid_list.dart';
 
-class AnimeGridView extends StatelessWidget {
+class AnimeGridView extends ConsumerWidget {
   const AnimeGridView({
     super.key,
     required this.category,
@@ -15,28 +16,12 @@ class AnimeGridView extends StatelessWidget {
   final AnimeCategory category;
 
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getAnimeByRankingTypeApi(
-        rankingType: category.rankingType,
-        limit: 100,
-      ),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Loader();
-        }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final animes = ref.watch(animesProvider).animes;
 
-        if (snapshot.data != null) {
-          final animes = snapshot.data;
-
-          return AnimesGridList(
-            title: category.title,
-            animes: animes!,
-          );
-        }
-
-        return ErrorScreen(error: snapshot.error.toString());
-      },
+    return AnimesGridList(
+      title: category.title,
+      animes: animes!,
     );
   }
 }

@@ -28,9 +28,10 @@ class AnimesRepositoryImpl implements AnimesRepository {
   Future<PaginationData<Anime>> fetchAnimesByRanking({
     required String rankingType,
     required String? nextPageUrl,
+    int limit = 12,
   }) async {
     final baseUrl = nextPageUrl ??
-        'anime/ranking?ranking_type=$rankingType&limit=12&offset=0';
+        'anime/ranking?ranking_type=$rankingType&limit=$limit&offset=0';
 
     final response = await malService.dio.get(baseUrl);
 

@@ -1,53 +1,51 @@
+import 'package:anime_world/notifiers/animes_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../api/get_anime_by_ranking_type_api.dart';
+import '../views/anime_list_view.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
 import '/models/anime_category.dart';
-import '../views/anime_list_view.dart';
 
-class CategoryanimesScreen extends StatelessWidget {
+class CategoryanimesScreen extends ConsumerStatefulWidget {
   const CategoryanimesScreen({
-    super.key,
+    Key? key,
     required this.category,
-  });
+  }) : super(key: key);
 
   final AnimeCategory category;
 
   static const routeName = '/categories-anime';
 
   @override
+  ConsumerState<CategoryanimesScreen> createState() =>
+      _CategoryanimesScreenState();
+}
+
+class _CategoryanimesScreenState extends ConsumerState<CategoryanimesScreen> {
+  @override
+  void initState() {
+    Future.microtask(
+      () => ref.read(animesProvider.notifier).fetchAllAnimes(
+            rankingType: widget.category.rankingType,
+          ),
+    );
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getAnimeByRankingTypeApi(
-        rankingType: category.rankingType,
-        limit: 500,
+    final animes = ref.watch(animesProvider).animes;
+
+    if (animes == null) return const Loader();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.category.title),
       ),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Loader();
-        }
-
-        if (snapshot.data != null) {
-          final animes = snapshot.data!;
-          // .map(
-          //   (rankingAnime) => rankingAnime.node,
-          // );
-
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(category.title),
-            ),
-            body: AnimeListView(
-              animes: animes,
-            ),
-          );
-        }
-
-        return ErrorScreen(
-          error: snapshot.error.toString(),
-        );
-      },
+      body: AnimeListView(
+        animes: animes,
+      ),
     );
   }
 }

@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import '/common/extensions/extensions.dart';
 import '/common/styles/paddings.dart';
 import '/common/utils/utils.dart';
-import 'screen_home.dart';
+import '../screen_home.dart';
 import '/views/featured_animes.dart';
 import '/widgets/seasonal_anime_view.dart';
 import '/widgets/top_animes_list.dart';
 
-class AnimesScreen extends StatefulWidget {
-  const AnimesScreen({super.key});
+class ScreenAnimes extends StatefulWidget {
+  const ScreenAnimes({super.key});
 
   @override
-  State<AnimesScreen> createState() => _AnimesScreenState();
+  State<ScreenAnimes> createState() => _ScreenAnimesState();
 }
 
-class _AnimesScreenState extends State<AnimesScreen> {
+class _ScreenAnimesState extends State<ScreenAnimes> {
   @override
   void initState() {
     super.initState();

@@ -48,6 +48,7 @@ class AnimesNotifier extends StateNotifier<AnimesState> {
   //! Fetch all animes list
   Future<void> fetchAllAnimes({
     required String rankingType,
+    int limit = 10,
   }) async {
     try {
       state = state.copyWith(status: DataStatus.loading);
@@ -55,6 +56,7 @@ class AnimesNotifier extends StateNotifier<AnimesState> {
       final allAnimes = await animesRepo.fetchAnimesByRanking(
         rankingType: rankingType,
         nextPageUrl: null,
+        limit: limit,
       );
 
       if (allAnimes.data.isNotEmpty) {
@@ -68,13 +70,14 @@ class AnimesNotifier extends StateNotifier<AnimesState> {
         state = state.copyWith(error: 'No data found');
       }
     } catch (e) {
-      state = state.copyWith(error: e.toString());
+      state = state.copyWith(error: e.toString(), status: DataStatus.error);
     }
   }
 
   //! Fetch more animes
   Future<void> fetchMoreAnimes({
     required String rankingType,
+    int limit = 12,
   }) async {
     // Avoid triggering multiple simultaneous calls
     if (state.status == DataStatus.loadingMore ||
@@ -89,6 +92,7 @@ class AnimesNotifier extends StateNotifier<AnimesState> {
       final moreAnimes = await animesRepo.fetchAnimesByRanking(
         rankingType: rankingType,
         nextPageUrl: pagination.nextPageUrl,
+        limit: limit,
       );
 
       pagination.nextPageUrl = moreAnimes.nextPageUrl;

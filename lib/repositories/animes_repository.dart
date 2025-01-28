@@ -8,6 +8,7 @@ abstract class AnimesRepository {
   Future<PaginationData<Anime>> fetchAnimesByRanking({
     required String rankingType,
     required String? nextPageUrl,
+    int limit = 12,
   });
 
   /// Fetches a single anime by its id
