@@ -3,14 +3,14 @@ import 'package:flutter/material.dart';
 import '/models/anime_category.dart';
 import '/views/anime_grid_view.dart';
 
-class CategoriesScreen extends StatefulWidget {
-  const CategoriesScreen({super.key});
+class ScreenCategories extends StatefulWidget {
+  const ScreenCategories({super.key});
 
   @override
-  State<CategoriesScreen> createState() => _CategoriesScreenState();
+  State<ScreenCategories> createState() => _ScreenCategoriesState();
 }
 
-class _CategoriesScreenState extends State<CategoriesScreen> {
+class _ScreenCategoriesState extends State<ScreenCategories> {
   final _animeTabs = animeCategories
       .map((animeCategory) => Tab(text: animeCategory.title))
       .toList();

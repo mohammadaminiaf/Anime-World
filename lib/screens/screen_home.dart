@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'animes/screen_animes.dart';
-import '/screens/categories_screen.dart';
+import 'animes/screen_categories.dart';
 import 'screen_search.dart';
 import 'settings/screen_settings.dart';
 
@@ -31,7 +31,7 @@ class _ScreenHomeState extends State<ScreenHome> {
   final _screens = const [
     ScreenAnimes(),
     ScreenSearch(),
-    CategoriesScreen(),
+    ScreenCategories(),
     ScreenSettings(),
   ];
 

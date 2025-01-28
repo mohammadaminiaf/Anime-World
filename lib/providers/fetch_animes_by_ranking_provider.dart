@@ -1,8 +1,8 @@
-import 'package:dio/dio.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:anime_world/locator.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/models/anime.dart';
+import '/repositories/animes_repository.dart';
 
 class RankingAnimeParams {
   final String rankingType;
@@ -29,29 +29,16 @@ final fetchAllRankingAnimesProvider =
     FutureProvider.family<List<Anime>, RankingAnimeParams>((ref, params) async {
   final rankingType = params.rankingType;
   final limit = params.limit;
+  final animesRepo = getIt.get<AnimesRepository>();
 
-  final clientId = dotenv.env['CLIENT_ID'] ?? '';
-  final dio = Dio()
-    ..options.headers = {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-      'X-MAL-CLIENT-ID': clientId,
-    };
+  final response = await animesRepo.fetchAnimesByRanking(
+    rankingType: rankingType,
+    limit: limit,
+    nextPageUrl: null,
+  );
 
-  const baseUrl = 'https://api.myanimelist.net/v2/';
-  final urlProperties =
-      'anime/ranking?ranking_type=$rankingType&limit=$limit&offset=0';
-  final fullUrl = baseUrl + urlProperties;
-
-  final response = await dio.get(fullUrl);
-
-  if (response.statusCode == 200) {
-    final List animesData = response.data['data'];
-    final animes = (animesData).map(
-      (animeData) {
-        return Anime.fromJson(animeData);
-      },
-    ).toList();
+  if (response.data.isNotEmpty) {
+    final animes = response.data;
 
     return animes;
   } else {
