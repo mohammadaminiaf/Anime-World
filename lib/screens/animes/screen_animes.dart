@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import '/common/extensions/extensions.dart';
 import '/common/styles/paddings.dart';
 import '/common/utils/utils.dart';
-import '../screen_home.dart';
+import '/screens/screen_home.dart';
+import '/views/animes/seasonal_anime_view.dart';
 import '/views/featured_animes.dart';
-import '/widgets/seasonal_anime_view.dart';
 import '/widgets/top_animes_list.dart';
 
 class ScreenAnimes extends StatefulWidget {

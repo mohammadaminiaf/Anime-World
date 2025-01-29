@@ -6,10 +6,10 @@ import '/core/components/view_all_header.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
 import '/models/anime.dart';
-import '../screens/screen_anime_details.dart';
+import '/providers/fetch_seasonal_animes_provider.dart';
+import '/screens/screen_anime_details.dart';
 import '/screens/view_all_seasonal_animes_screen.dart';
 import '/widgets/anime_tile.dart';
-import '../providers/anime_providers.dart';
 
 class SeasonalAnimeView extends ConsumerWidget {
   const SeasonalAnimeView({
@@ -21,7 +21,7 @@ class SeasonalAnimeView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final seasonalAnimes = ref.watch(getSeasonalAnimesProvider);
+    final seasonalAnimes = ref.watch(fetchSeasonalAnimesProvider(12));
 
     final categoryTitle = ViewAllHeader(
       title: label,

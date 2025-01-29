@@ -8,6 +8,7 @@ import '/common/models/api_response.dart';
 import '/common/models/pagination_data.dart';
 import '/common/services/dio_client.dart';
 import '/common/services/mal_client.dart';
+import '/common/utils/utils.dart';
 import '/models/anime.dart';
 import '/models/anime_details.dart';
 import '/models/anime_info.dart';
@@ -54,6 +55,41 @@ class AnimesRepositoryImpl implements AnimesRepository {
       debugPrint("Error: ${response.statusCode}");
       debugPrint("Body: ${response.data}");
       throw Exception("Failed to get data!");
+    }
+  }
+
+  //! Fetch anime for a season
+  @override
+  Future<PaginationData<Anime>> fetchSeasonalAnimes({
+    required int limit,
+    String? nextPageUrl,
+  }) async {
+    try {
+      final year = DateTime.now().year;
+      final season = getCurrentSeason();
+      final urlInfo =
+          nextPageUrl ?? "anime/season/$year/$season?limit=$limit&offset=0";
+      final response = await malService.dio.get(urlInfo);
+
+      if (response.statusCode == 200) {
+        // Successful response
+        final data = response.data;
+        final seasonalAnime = AnimeInfo.fromJson(data);
+
+        final nextPageUrl = response.data['paging']['next'];
+
+        final PaginationData<Anime> animesData = PaginationData(
+          data: seasonalAnime.animes.toList(),
+          fromJson: Anime.fromJson,
+          nextPageUrl: nextPageUrl,
+        );
+
+        return animesData;
+      } else {
+        throw Exception("Failed to get data!");
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 
@@ -202,6 +238,7 @@ class AnimesRepositoryImpl implements AnimesRepository {
     }
   }
 
+  //! Add movie as viewed
   @override
   Future<void> createViewedMovie({
     required Movie movie,

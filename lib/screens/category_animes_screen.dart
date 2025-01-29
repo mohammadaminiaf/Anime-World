@@ -1,11 +1,10 @@
-import 'package:anime_world/notifiers/animes_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../views/anime_list_view.dart';
-import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
 import '/models/anime_category.dart';
+import '/notifiers/animes_notifier.dart';
+import '/views/anime_list_view.dart';
 
 class CategoryanimesScreen extends ConsumerStatefulWidget {
   const CategoryanimesScreen({

@@ -5,10 +5,10 @@ import '/locator.dart';
 import '/models/anime_details.dart';
 import '/repositories/animes_repository.dart';
 
-//! Seasonal Anime
-final getSeasonalAnimesProvider = FutureProvider((ref) {
-  return getSeasonalAnimesApi(limit: 500);
-});
+// //! Seasonal Anime
+// final getSeasonalAnimesProvider = FutureProvider((ref) {
+//   return getSeasonalAnimesApi(limit: 500);
+// });
 
 // //! Animes By Ranking
 // final getAnimeByRankingProvider = FutureProvider.autoDispose

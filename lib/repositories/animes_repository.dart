@@ -11,6 +11,12 @@ abstract class AnimesRepository {
     int limit = 12,
   });
 
+  /// Fetches animes for each season [winter, spring, summer, fall]
+  Future<PaginationData<Anime>> fetchSeasonalAnimes({
+    required int limit,
+    String? nextPageUrl,
+  });
+
   /// Fetches a single anime by its id
   Future<AnimeDetails> fetchAnimeById(int id);
 

@@ -14,9 +14,9 @@ class AnimeListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
+    return SliverPadding(
       padding: Paddings.defaultPadding,
-      child: ListView.builder(
+      sliver: SliverList.builder(
         itemCount: animes.length,
         itemBuilder: (context, index) {
           final anime = animes.elementAt(index);

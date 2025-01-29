@@ -1,11 +1,12 @@
+import 'package:anime_world/notifiers/seasonal_animes/seasonal_animes_notifier.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../api/get_seasonal_animes_api.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
 import '../views/anime_list_view.dart';
 
-class ViewAllSeasonalAnimesScreen extends StatefulWidget {
+class ViewAllSeasonalAnimesScreen extends ConsumerStatefulWidget {
   const ViewAllSeasonalAnimesScreen({
     super.key,
     required this.label,
@@ -16,38 +17,60 @@ class ViewAllSeasonalAnimesScreen extends StatefulWidget {
   static const routeName = '/view-all-seasonal-animes';
 
   @override
-  State<ViewAllSeasonalAnimesScreen> createState() =>
+  ConsumerState<ViewAllSeasonalAnimesScreen> createState() =>
       _ViewAllSeasonalAnimesScreenState();
 }
 
 class _ViewAllSeasonalAnimesScreenState
-    extends State<ViewAllSeasonalAnimesScreen> {
+    extends ConsumerState<ViewAllSeasonalAnimesScreen> {
+  final ScrollController scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    scrollController.addListener(_paginate);
+    Future.microtask(() {
+      ref
+          .read(seasonalAnimesNotifierProvider.notifier)
+          .fetchSeasonalAnimes(limit: 12);
+    });
+  }
+
+  void _paginate() {
+    if (scrollController.position.maxScrollExtent == scrollController.offset) {
+      ref
+          .read(seasonalAnimesNotifierProvider.notifier)
+          .fetchSeasonalAnimes(limit: 12);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getSeasonalAnimesApi(
-        limit: 500,
+    final state = ref.watch(seasonalAnimesNotifierProvider);
+
+    if (state.isLoading && state.animes.isEmpty) return const Loader();
+    if (state.error != null) return ErrorScreen(error: state.error!);
+
+    final animes = state.animes;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Top animes'),
       ),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Loader();
-        }
-
-        if (snapshot.data != null) {
-          final animes = snapshot.data!;
-
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Top animes'),
-            ),
-            body: AnimeListView(animes: animes),
-          );
-        }
-
-        return ErrorScreen(
-          error: snapshot.error.toString(),
-        );
-      },
+      body: CustomScrollView(
+        controller: scrollController,
+        slivers: [
+          AnimeListView(animes: animes),
+          if (state.isLoading && state.hasMore && state.animes.isNotEmpty)
+            const SliverToBoxAdapter(child: Loader())
+        ],
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    scrollController.dispose();
+    super.dispose();
   }
 }
