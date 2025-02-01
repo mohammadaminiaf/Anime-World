@@ -5,11 +5,10 @@ import 'package:go_router/go_router.dart';
 import '/core/components/view_all_header.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
-import '/models/anime.dart';
 import '/providers/fetch_seasonal_animes_provider.dart';
-import '/screens/screen_anime_details.dart';
 import '/screens/view_all_seasonal_animes_screen.dart';
-import '/widgets/anime_tile.dart';
+import '/views/animes/animes_list_view_hor.dart';
+// import '/views/anime_list_view.dart';
 
 class SeasonalAnimeView extends ConsumerWidget {
   const SeasonalAnimeView({
@@ -40,7 +39,7 @@ class SeasonalAnimeView extends ConsumerWidget {
             // Top Animes this Season + View all
             categoryTitle,
             // Image Slider
-            AnimeListView(
+            AnimesListView(
               animes: animes,
             ),
           ],
@@ -52,39 +51,6 @@ class SeasonalAnimeView extends ConsumerWidget {
       loading: () {
         return const Loader();
       },
-    );
-  }
-}
-
-class AnimeListView extends StatelessWidget {
-  const AnimeListView({
-    super.key,
-    required this.animes,
-  });
-
-  final Iterable<Anime> animes;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: 300,
-      child: ListView.separated(
-        itemCount: animes.length,
-        scrollDirection: Axis.horizontal,
-        shrinkWrap: true,
-        separatorBuilder: (context, index) {
-          return const SizedBox(width: 10);
-        },
-        itemBuilder: (context, index) {
-          final anime = animes.elementAt(index);
-          return InkWell(
-            onTap: () {
-              context.push(ScreenAnimeDetails.routeName, extra: anime.node.id);
-            },
-            child: AnimeTile(anime: anime.node),
-          );
-        },
-      ),
     );
   }
 }
