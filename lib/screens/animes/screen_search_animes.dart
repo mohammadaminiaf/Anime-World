@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:anime_world/notifiers/search_animes_notifier.dart';
+import 'package:anime_world/notifiers/search_animes/search_animes_notifier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/common/styles/paddings.dart';
 import '/models/anime.dart';
-import '/notifiers/search_animes_state.dart';
+import '../../notifiers/search_animes/search_animes_state.dart';
 import '/widgets/anime_list_tile.dart';
 
 class ScreenSearchAnimes extends ConsumerStatefulWidget {

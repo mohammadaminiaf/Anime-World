@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -97,23 +98,26 @@ class AnimesRepositoryImpl implements AnimesRepository {
   @override
   Future<AnimeDetails> fetchAnimeById(int id) async {
     try {
-      final baseUrl =
-          'https://api.myanimelist.net/v2/anime/$id?fields=id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics';
-
       final clientId = dotenv.env['CLIENT_ID'] ?? '';
 
-      final response = await http.get(
-        Uri.parse(baseUrl),
-        headers: {
-          'X-MAL-CLIENT-ID': clientId,
+      final response = await malService.dio.get(
+        'anime/$id',
+        queryParameters: {
+          'fields':
+              'id,title,main_picture,alternative_titles,start_date,end_date,synopsis,mean,rank,popularity,num_list_users,num_scoring_users,nsfw,created_at,updated_at,media_type,status,genres,my_list_status,num_episodes,start_season,broadcast,source,average_episode_duration,rating,pictures,background,related_anime,related_manga,recommendations,studios,statistics',
         },
+        options: Options(
+          headers: {
+            'X-MAL-CLIENT-ID': clientId,
+          },
+        ),
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
+        final Map<String, dynamic> data = response.data;
         final animeDetails = AnimeDetails.fromJson(data);
 
-        // If animes details was opened successfully, add movie to viewed movies
+        // If anime details were opened successfully, add movie to viewed movies
         final movie = Movie(
           id: animeDetails.id,
           title: animeDetails.title,
@@ -122,12 +126,12 @@ class AnimesRepositoryImpl implements AnimesRepository {
           genres: animeDetails.genres.map((genre) => genre.name).toList(),
           rating: animeDetails.mean,
         );
-        await createViewedMovie(movie: movie);
+        createViewedMovie(movie: movie);
 
         return animeDetails;
       } else {
         debugPrint('Code: ${response.statusCode}');
-        debugPrint('Error: ${response.body}');
+        debugPrint('Error: ${response.data}');
         throw Exception('Could Not Get Data!');
       }
     } catch (e) {
@@ -243,6 +247,10 @@ class AnimesRepositoryImpl implements AnimesRepository {
   Future<void> createViewedMovie({
     required Movie movie,
   }) async {
-    await dioService.post('movies/viewed', movie.toJson());
+    try {
+      await dioService.post('movies/viewed', movie.toJson());
+    } catch (e) {
+      print(e.toString());
+    }
   }
 }

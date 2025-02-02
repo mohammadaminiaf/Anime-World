@@ -7,7 +7,7 @@ import 'package:go_router/go_router.dart';
 import '/core/screens/error_screen.dart';
 import '/core/widgets/loader.dart';
 import '/models/movies/movie.dart';
-import '/notifiers/favorite_animes_notifier.dart';
+import '../../notifiers/favorite_animes/favorite_animes_notifier.dart';
 
 class ScreenFavoriteAnimes extends ConsumerWidget {
   const ScreenFavoriteAnimes({super.key});

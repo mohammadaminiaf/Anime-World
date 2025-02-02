@@ -1,7 +1,7 @@
 import 'package:anime_world/common/models/pagination.dart';
 import 'package:anime_world/locator.dart';
 import 'package:anime_world/models/movies/movie.dart';
-import 'package:anime_world/notifiers/favorite_animes_state.dart';
+import 'package:anime_world/notifiers/favorite_animes/favorite_animes_state.dart';
 import 'package:anime_world/repositories/animes_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

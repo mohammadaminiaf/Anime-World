@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '/locator.dart';
-import '/notifiers/search_animes_state.dart';
+import 'search_animes_state.dart';
 import '/repositories/animes_repository.dart';
 
 class SearchNotifier extends StateNotifier<SearchAnimesState> {
